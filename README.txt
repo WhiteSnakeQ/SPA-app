@@ -1,0 +1,44 @@
+Database schema files are located in: additional/db/
+
+Configure .env file manually or rename:
+.env.example -> .env
+
+The project runs entirely in Docker.
+From the project root folder execute:
+docker compose up --build
+
+After startup the application will be available at: http://localhost:8080
+
+Seed Test Comments
+To generate default comments: http://localhost:8080/api/comments/seed 
+Seed works only if there are no comments in the database.
+
+Features
+    Cascading comments system
+    Unlimited nesting level for replies
+    Pagination support
+    25 root comments per page
+    Root comments can be sorted by:
+        Creation date
+        Username
+        Email
+
+Uploaded files are stored in Docker volume: upload_data
+
+To store files directly on the host machine instead of Docker volume,
+replace this line in docker-compose.yml:
+
+- upload_data:/app/wwwroot/uploads
+
+with:
+
+- ./uploads:/app/wwwroot/uploads
+
+
+Stack
+ASP.NET Core 9
+Angular
+MSSQL Server
+Docker / Docker Compose
+Entity Framework Core
+
