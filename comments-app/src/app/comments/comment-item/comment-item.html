@@ -1,0 +1,65 @@
+<div class="comment">
+
+    <div class="comment-header">
+
+        <span class="clickable"	(click)="sort.emit('userName')">
+
+		{{ comment.userName }}
+
+		</span>
+
+		<span class="clickable"	(click)="sort.emit('email')">
+            {{ comment.email }}
+        </span>
+
+        <span class="clickable"	(click)="sort.emit('createdAt')">
+            {{ comment.createdAt | date:'dd.MM.yyyy HH:mm' }}
+        </span>
+
+		<button class="reply-button" (click)="openReply()">
+			Reply
+		</button>	
+    </div>
+
+    <div class="comment-body" [innerHTML]="comment.text">
+    </div>
+
+	<div class="comment-files" *ngIf="comment.files.length">
+		<div class="comment-files">
+			<div
+				*ngFor="let file of comment.files"
+				class="file-item">
+				<a
+					*ngIf="isImage(file)"
+					[href]="file.fileUrl"
+					data-lightbox="comment-files">
+
+					<img
+						[src]="file.fileUrl"
+						class="comment-image">
+
+				</a>
+				
+				<a
+					*ngIf="!isImage(file)"
+					[href]="file.fileUrl"
+					target="_blank">
+
+					{{ file.fileName }}
+
+				</a>
+			</div>
+		</div>
+	</div>
+
+			
+
+	<app-comment-form *ngIf="showReplyForm" [parentId]="comment.id" (created)="createdReply($event)" (closed)="showReplyForm = false">
+	</app-comment-form>
+
+    <div class="children" *ngIf="comment.children.length">
+        <app-comment-item *ngFor="let child of comment.children" [comment]="child" (sort)="sort.emit('createdAt')" (reply)="openReply()">
+        </app-comment-item>
+    </div>
+
+</div>

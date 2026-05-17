@@ -1,0 +1,71 @@
+.comments-table
+{
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+.comments-table th,
+.comments-table td
+{
+    border: 1px solid #ddd;
+
+    padding: 12px;
+
+    vertical-align: top;
+}
+
+.comments-table th
+{
+    background: #f3f3f3;
+
+    cursor: pointer;
+}
+
+.comments-table th:hover
+{
+    background: #ececec;
+}
+
+.user
+{
+    font-weight: bold;
+}
+
+.thread
+{
+    margin-top: 15px;
+}
+.pagination
+{
+    margin-top: 20px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 15px;
+}
+
+.nav-button
+{
+    width: 70px;
+
+    height: 35px;
+}
+
+.hidden
+{
+    visibility: hidden;
+
+    pointer-events: none;
+}
+
+.page-number
+{
+    font-size: 18px;
+
+    font-weight: bold;
+}

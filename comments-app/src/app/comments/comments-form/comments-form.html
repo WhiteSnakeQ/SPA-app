@@ -1,0 +1,129 @@
+<div>
+	<form [formGroup]="form" (ngSubmit)="createComment()" class="comment-form">
+
+		<h3>
+        	{{ parentId ? 'Reply' : 'New comment' }}
+   		</h3>
+
+		<input type="text" formControlName="userName" placeholder="User name">
+			<div *ngIf="form.get('userName')?.touched">
+				<div *ngIf="form.get('userName')?.errors?.['required']">
+					User Name required
+				</div>
+
+				<div *ngIf="form.get('userName')?.errors?.['userName']">
+					Invalid User Name
+				</div>
+			</div>
+			<div *ngIf="form.get('userName')?.errors?.['backend']">
+				{{	form.get('userName')?.errors?.['backend']	}}
+			</div>
+
+		<input type="email" placeholder="E-mail" formControlName="email">
+			<div *ngIf="form.get('email')?.touched">
+				<div *ngIf="form.get('email')?.errors?.['required']">
+					Email required
+				</div>
+
+				<div *ngIf="form.get('email')?.errors?.['email']">
+					Invalid email
+				</div>
+			</div>
+				<div *ngIf="form.get('email')?.errors?.['backend']">
+					{{	form.get('email')?.errors?.['backend']	}}
+				</div>
+		<input type="text" placeholder="Homepage" formControlName="homePage">
+		<div *ngIf="form.get('homePage')?.touched">
+			<div *ngIf="form.get('homePage')?.errors?.['invalidUrl']">
+				Invalid url
+			</div>
+		</div>
+		<div *ngIf="form.get('homePage')?.errors?.['backend']">
+			{{	form.get('homePage')?.errors?.['backend']	}}
+		</div>
+
+		<div class="editor-toolbar">
+			<button
+				type="button"
+				(click)="wrapTag('i')">
+				[i]
+			</button>
+
+			<button
+				type="button"
+				(click)="wrapTag('strong')">
+				[strong]
+			</button>
+
+			<button
+				type="button"
+				(click)="wrapTag('code')">
+				[code]
+			</button>
+
+			<button
+				type="button"
+				(click)="insertLink()">
+				[a]
+			</button>
+		</div>
+		<textarea #textArea formControlName="text" rows="8">
+		</textarea>
+		<div *ngIf="form.get('text')?.touched">
+			<div *ngIf="form.get('text')?.errors?.['required']">
+				Comment required
+			</div>
+
+			<div *ngIf="form.get('text')?.errors?.['text']">
+				Invalid comment
+			</div>
+		</div>
+			<div *ngIf="form.get('text')?.errors?.['backend']">
+				{{	form.get('text')?.errors?.['backend']	}}
+			</div>
+
+		<input type="file" multiple (change)="onFilesSelected($event)">
+		<div *ngFor="let file of files; let i = index">
+
+			<div>
+				{{ file.name }}
+			</div>
+
+			<div
+				class="error"
+				*ngIf="fileErrors[i]">
+
+				{{ fileErrors[i] }}
+
+			</div>
+
+		</div>
+
+		<div class="captcha-container">
+			<img *ngIf="captchaImage" [src]="captchaImage" alt="captcha">
+			<button type="button" (click)="loadCaptcha()">
+				Reload captcha
+			</button>
+		</div>
+
+		<input type="text" placeholder="Captcha" formControlName="captchaAnswer">
+		<div *ngIf="form.get('captchaAnswer')?.touched">
+			<div *ngIf="form.get('captchaAnswer')?.errors?.['required']">
+				Captcha required
+			</div>
+		</div>
+			<div *ngIf="form.get('captchaAnswer')?.errors?.['backend']">
+				{{	form.get('captchaAnswer')?.errors?.['backend']	}}
+			</div>
+
+		<div class="actions">
+			<button type="submit"  [disabled]="form.invalid">
+				Send
+			</button>
+
+			<button (click)="closed.emit()">
+				Cancel
+			</button>
+		</div>
+	</form>
+</div>

@@ -1,0 +1,102 @@
+.comment-form
+{
+    margin-top: 10px;
+
+    padding: 15px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 8px;
+
+    background: #fafafa;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+input
+{
+    padding: 10px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 6px;
+}
+
+.actions
+{
+    display: flex;
+
+    gap: 10px;
+}
+
+.comment-form
+{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.editor-toolbar button
+{
+    padding: 6px 12px;
+
+    border: 1px solid #cfcfcf;
+    border-radius: 6px;
+
+    background: white;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s,
+        border-color 0.2s,
+        transform 0.1s;
+}
+
+.editor-toolbar button:hover
+{
+    background: #ececec;
+    border-color: #999;
+}
+
+.editor-toolbar button:active
+{
+    transform: scale(0.97);
+}
+
+textarea
+{
+    width: 100%;
+
+    min-height: 180px;
+
+    padding: 12px;
+
+    border: 1px solid #d0d0d0;
+    border-radius: 10px;
+
+    resize: vertical;
+
+    font-size: 14px;
+    line-height: 1.5;
+
+    outline: none;
+
+    transition: border-color 0.2s;
+}
+
+textarea:focus
+{
+    border-color: #4f8cff;
+}
+
+.error
+{
+    color: #d93025;
+
+    font-size: 13px;
+}

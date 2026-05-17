@@ -1,0 +1,49 @@
+services:
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04
+
+    environment:
+      SA_PASSWORD: ${SA_PASSWORD}
+      ACCEPT_EULA: "Y"
+
+    container_name: comments-db
+
+    restart: unless-stopped
+
+    ports:
+      - "1433:1433"
+
+    volumes:
+      - sql_data:/var/opt/mssql
+
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/localhost/1433'"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 40s
+
+  app:
+    build:
+      context: .
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    volumes:
+      - ./backend:/src/backend
+      - upload_data:/app/wwwroot/uploads
+
+    command: dotnet SPA-app.dll
+
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=db;Database=${DB_NAME};User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True"
+
+volumes:
+  sql_data:
+  upload_data:

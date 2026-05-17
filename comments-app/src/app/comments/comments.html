@@ -1,0 +1,33 @@
+<h1>
+    Comments
+</h1>
+
+<button class="add-comment-button" (click)="openReply(null)">
+    Add comment
+</button>
+
+<app-comment-form *ngIf="showForm" [parentId]="replyParentId" (created)="onCommentCreated($event)" (closed)="closeForm()">
+</app-comment-form>
+
+<div class="comments-container">
+
+    <app-comment-item *ngFor="let comment of comments" [comment]="comment" (sort)="setSort($event)">
+    </app-comment-item>
+
+</div>
+
+<div class="pagination">
+
+    <button class="nav-button" [class.hidden]="page === 0" (click)="prevPage()">
+        Prev
+    </button>
+
+    <span class="page-number">
+        Page {{ page + 1 }}
+    </span>
+
+    <button class="nav-button" [class.hidden]="!hasNextPage" (click)="nextPage()">
+        Next
+    </button>
+
+</div>

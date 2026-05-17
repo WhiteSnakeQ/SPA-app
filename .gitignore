@@ -1,0 +1,17 @@
+.vs/
+*.user
+
+**/bin/
+**/obj/
+
+**/node_modules/
+
+backend/wwwroot/main-*.js
+backend/wwwroot/styles-*.css
+backend/wwwroot/scripts-*.js
+
+backend/wwwroot/lib/
+
+.env
+
+uploads/
