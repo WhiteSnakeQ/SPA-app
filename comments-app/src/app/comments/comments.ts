@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CommentModel } from '../models/comment';
 import { CommentsService } from '../services/comments';
+import { SignalrService } from '../services/signalr';
 import { CommentItemComponent } from './comment-item/comment-item';
 import { CommentFormComponent } from './comments-form/comments-form'
 
@@ -31,16 +32,36 @@ export class CommentsComponent
 		replyParentId: number | null = null;
 		showForm: boolean = false;
 
+		
+
 		constructor
-		(private commentsService: CommentsService, private cdr: ChangeDetectorRef)
+		(private commentsService: CommentsService, private cdr: ChangeDetectorRef, private signalr: SignalrService)
 		{
 		}
 
-		ngOnInit(): void
+		async ngOnInit(): Promise<void>
 		{
+			await this.signalr.startConnection(
+				comment => this.onCommentCreatedSignal(comment),
+				reply => this.onReplyCreatedSignal(reply)
+			);
+
+			document.addEventListener
+			(
+				'visibilitychange',
+				this.handleVisibilityChange
+			);
 			this.loadComments();
 		}
 
+		handleVisibilityChange = (): void =>
+		{
+			if (document.visibilityState === 'visible')
+			{
+				this.loadComments();
+			}
+		}
+		
 		loadComments(): void
 		{
 			this.commentsService
@@ -74,16 +95,66 @@ export class CommentsComponent
 			this.replyParentId = null;
 		}
 
-		onCommentCreated(comment: CommentModel): void
+		onCommentCreated(comment: CommentModel): void 
 		{
 			this.closeForm();
-			
-			this.comments.unshift(comment);
-			if (this.comments.length > 25)
+		}
+
+		onCommentCreatedSignal(comment: CommentModel): void 
+		{	
+			if (!this.shouldInsert)
 			{
+				this.loadComments()
+				return;
+			}
+			
+			this.insertComment(comment)
+		}
+
+		private shouldInsert(): boolean 
+		{
+			return (
+				this.page === 0 &&
+				this.sortField === 'createdAt' &&
+				this.sortDesc
+			);
+		}
+
+		private insertComment(comment: CommentModel): void 
+		{
+			this.comments.unshift(comment);
+
+			if (this.comments.length > 25) {
+
 				this.comments.pop();
 				this.hasNextPage = true;
 			}
+			this.cdr.detectChanges();
+		}
+
+		onReplyCreatedSignal(reply: CommentModel): void
+		{
+			
+			const parent = this.findComment(this.comments,	reply.parentId);
+    		if (!parent)
+        		return;
+
+			parent.children.push(reply);
+			this.cdr.detectChanges();
+		}
+
+		findComment(comments: CommentModel[], parentId: number) : CommentModel | null
+		{
+			for (const comment of comments)
+			{
+				if (comment.id == parentId)
+					return comment;
+
+				const children = this.findComment(comment.children,	parentId);
+				if (children)
+					return children;
+			}
+			return null;
 		}
 
 		setSort (field: 'userName' | 'email' | 'createdAt'): void
@@ -121,3 +192,4 @@ export class CommentsComponent
 			this.loadComments();
 		}
 	}
+	

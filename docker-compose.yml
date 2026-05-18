@@ -44,6 +44,23 @@ services:
     environment:
       ConnectionStrings__DefaultConnection: "Server=db;Database=${DB_NAME};User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True"
 
+  ngrok:
+    image: ngrok/ngrok:3
+
+    depends_on:
+      - app
+
+    command:
+      - "http"
+      - "--url=tabby-spiffy-blinks.ngrok-free.dev"
+      - "app:8080"
+
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
+
+    ports:
+      - "4040:4040"
+
 volumes:
   sql_data:
   upload_data:

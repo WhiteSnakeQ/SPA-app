@@ -5,6 +5,8 @@ namespace SPA_приложение.DTOs
     public class CommentDTO
     {
         public int Id { get; set; }
+
+        public int? ParentId { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
         public string Text { get; set; }
@@ -16,6 +18,7 @@ namespace SPA_приложение.DTOs
         public CommentDTO(Comment comment)
         {
             Id = comment.Id;
+            ParentId = comment.ParentId;
             UserName = comment.UserName;
             Email = comment.Email;
             Text = comment.Text;
@@ -39,6 +42,7 @@ namespace SPA_приложение.DTOs
         public CommentDTO(Comment comment, List<CommentFileDTO> files, List<CommentDTO> children)
         {
             Id = comment.Id;
+            ParentId = comment.ParentId;
             UserName = comment.UserName;
             Email = comment.Email;
             Text = comment.Text;

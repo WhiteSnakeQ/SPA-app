@@ -59,10 +59,12 @@ export class CommentFormComponent
 		const data =
         {
             ...this.form.value,
+			userName: this.form.value.userName.trim(),
             parentId: this.parentId,
 			captchaId: this.captchaId,
             files: this.files
         };
+		
         this.commentsService.createComment(data).subscribe(
 		{
 			next: comment =>
@@ -93,7 +95,6 @@ export class CommentFormComponent
 			if (key.startsWith('Files['))
 			{
 				const messages = errors[key];
-
 				const match = key.match(/Files\[(\d+)\]/);
 
 				if (match)
@@ -191,5 +192,4 @@ export class CommentFormComponent
 
 		this.form.controls['text'].setValue(newText);
 	}
-
 }

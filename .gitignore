@@ -6,6 +6,8 @@
 
 **/node_modules/
 
+**/.spec.ts
+
 backend/wwwroot/main-*.js
 backend/wwwroot/styles-*.css
 backend/wwwroot/scripts-*.js

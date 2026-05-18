@@ -13,6 +13,8 @@ export interface CommentModel
 {
     id: number;
 
+	parentId: number;
+
     userName: string;
 
     email: string;

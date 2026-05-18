@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 import { CommentFormComponent } from '../comments-form/comments-form';
 import { FileModel } from '../../models/comment';
 
-@Component({
+@Component
+({
 	selector: 'app-comment-item',
 	standalone: true,
 	imports: [
@@ -13,9 +14,10 @@ import { FileModel } from '../../models/comment';
 	],
 	templateUrl: './comment-item.html',
 	styleUrls: ['./comment-item.css']
-	})
+})
 
-export class CommentItemComponent {
+export class CommentItemComponent 
+{
 	@Input() comment!: CommentModel;
 	@Output() sort = new EventEmitter<'userName' | 'email' | 'createdAt'>();
 
@@ -28,8 +30,6 @@ export class CommentItemComponent {
 
 	createdReply(reply: CommentModel): void
 	{
-		this.comment.children.push(reply);
-
     	this.showReplyForm = false;
 	}
 

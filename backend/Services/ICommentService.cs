@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
+using SPA_app.Hubs;
 using SPA_приложение.Constants;
 using SPA_приложение.Data;
 using SPA_приложение.DTOs;
@@ -22,12 +24,14 @@ namespace SPA_приложение.Services
     public class CommentService : ICommentService
     {
         private readonly AppDbContext _db;
+        private readonly IHubContext<CommentsHub> _hub;
         private readonly ICommentFileService _fileService;
         private readonly ICaptchaService _captchaService;
 
-        public CommentService(AppDbContext db, ICommentFileService fileService, ICaptchaService captchaService)
+        public CommentService(AppDbContext db, IHubContext<CommentsHub> hub, ICommentFileService fileService, ICaptchaService captchaService)
         {
             _db = db;
+            _hub = hub;
             _fileService = fileService;
             _captchaService = captchaService;
         }
@@ -59,6 +63,10 @@ namespace SPA_приложение.Services
 
             await transaction.CommitAsync();
 
+            if (comment.ParentId == null)
+                await _hub.Clients.All.SendAsync("CommentCreated", new CommentDTO(comment));
+            else
+                await _hub.Clients.All.SendAsync("ReplyCreated", new CommentDTO(comment));
             return new CommentDTO(comment);
         }
 

@@ -7,10 +7,10 @@ The project runs entirely in Docker.
 From the project root folder execute:
 docker compose up --build
 
-After startup the application will be available at: http://localhost:8080
+After startup the application will be available at: https://tabby-spiffy-blinks.ngrok-free.dev
 
 Seed Test Comments
-To generate default comments: http://localhost:8080/api/comments/seed 
+To generate default comments: https://tabby-spiffy-blinks.ngrok-free.dev/api/comments/seed 
 Seed works only if there are no comments in the database.
 
 Features

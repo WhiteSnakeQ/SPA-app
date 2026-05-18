@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using SPA_app.Hubs;
 using SPA_приложение.Data;
 using SPA_приложение.Extensions;
 using SPA_приложение.Middleware;
@@ -22,6 +23,8 @@ namespace SPA_приложение
 
             builder.Services.AddMemoryCache();
 
+            builder.Services.AddSignalR();
+
             builder.Services.AddControllers();
 
             builder.Services.AddApplicationValidators();
@@ -44,23 +47,25 @@ namespace SPA_приложение
             }
             else
             {
+                //app.UseHttpsRedirection();
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
 
             app.UseMiddleware<ExceptionMiddleware>();
 
-            app.UseHttpsRedirection();
-
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
             app.UseRouting();
 
-            app.UseCors("Angular");
+            app.UseCors("cors");
 
             app.UseAuthorization();
             app.MapControllers();
+
+            app.MapHub<CommentsHub>("/commentsHub");
+
             app.MapFallbackToFile("index.html");
 
             app.Run();

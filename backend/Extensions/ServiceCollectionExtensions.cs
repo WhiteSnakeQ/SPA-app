@@ -31,15 +31,15 @@ namespace SPA_приложение.Extensions
         {
             services.AddCors(options =>
             {
-                options.AddPolicy("Angular",
-                    policy =>
-                    {
-                        policy
-                            .AllowAnyOrigin()
-                            .AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .WithExposedHeaders("Captcha-Id");
-                    });
+                options.AddPolicy("cors", policy =>
+                {
+                    policy
+                        .SetIsOriginAllowed(_ => true)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                        .WithExposedHeaders("Captcha-Id");
+                });
             });
 
             return services;
