@@ -2,9 +2,7 @@
 {
     public enum FileType
     {
-        JPG,
-        PNG,
-        GIF,
+        Image,
         Text
     }
 }

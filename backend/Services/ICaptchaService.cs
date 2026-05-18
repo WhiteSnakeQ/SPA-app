@@ -103,32 +103,23 @@ namespace SPA_приложение.Services
                 {
                     int startX = CaptchaConstants.Letters.StartX;
                     int indentX = CaptchaConstants.Letters.indentX;
-                    int x =
-                        startX + i * indentX;
+                    int x = startX + i * indentX;
 
                     int MinY = CaptchaConstants.Letters.MinY;
                     int MaxY = CaptchaConstants.Letters.MaxY;
-                    int y =
-                        random.Next(MinY, MaxY);
+                    int y = random.Next(MinY, MaxY);
 
                     int angleMin = CaptchaConstants.Letters.angleMin;
                     int angleMax = CaptchaConstants.Letters.angleMax;
-                    int angle =
-                        random.Next(angleMin, angleMax);
+                    int angle = random.Next(angleMin, angleMax);
 
-                    var character =
-                        text[i].ToString();
+                    var character = text[i].ToString();
 
-                    ctx.DrawText(
-                        character,
-                        font,
-                        Color.Black,
-                        new PointF(x, y));
-
+                    ctx.DrawText(character, font, Color.Black, new PointF(x, y));
                     ctx.Rotate(angle);
                 }
 
-                for (int i = 0; i < 300; i++)
+                for (int i = 0; i < CaptchaConstants.GrayPoint; i++)
                 {
                     image[
                         random.Next(image.Width),

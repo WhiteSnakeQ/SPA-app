@@ -1,6 +1,12 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
+using SPA_app.Events.CommentCreated;
+using SPA_app.Events.Interface;
+using SPA_app.Events.Publisher;
+using SPA_app.Queue;
 using SPA_app.Services;
+using SPA_app.Services.Interface;
+using SPA_приложение.Queue;
 using SPA_приложение.Services;
 using SPA_приложение.Validators;
 
@@ -14,7 +20,14 @@ namespace SPA_приложение.Extensions
             services.AddScoped<ICommentFileService, CommentFileService>();
             services.AddScoped<ICommentService, CommentService>();
             services.AddScoped<ISeedService, SeedService>();
-            
+            services.AddScoped<IImageService, ImageService>();
+
+            services.AddScoped<IEventPublisher, EventPublisher>();
+            services.AddScoped<IEventHandler<CommentCreatedEvent>, CommentCreatedSignalRHandler>();
+
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            services.AddHostedService<QueuedHostedService>();
+
             return services;
         }
 

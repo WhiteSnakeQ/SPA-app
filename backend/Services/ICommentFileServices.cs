@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
+using SPA_app.Events.FileUploaded;
+using SPA_app.Events.Interface;
 using SPA_приложение.Data;
 using SPA_приложение.DTOs;
 using SPA_приложение.Enums;
@@ -11,37 +13,60 @@ namespace SPA_приложение.Services
 {
     public interface ICommentFileService
     {
-        Task Create(IFormFile file, Comment comment);
+        Task<string> Create(IFormFile file, Comment comment);
+        Task CreateMany(List<IFormFile>? file, Comment comment);
         Task<ILookup<int, CommentFile>> GetByCommentIds(List<int> commentIds);
     };
     public class CommentFileService : ICommentFileService
     {
         private readonly AppDbContext _db;
         private readonly IWebHostEnvironment _env;
-        public CommentFileService(AppDbContext db, IWebHostEnvironment env)
+        private readonly IEventPublisher _eventPublisher;
+        public CommentFileService(AppDbContext db, IWebHostEnvironment env, IEventPublisher eventPublisher)
         {
             _db = db;
             _env = env;
+            _eventPublisher = eventPublisher;
         }
 
-        public async Task Create(IFormFile file, Comment comment)
+        public async Task<string> Create(IFormFile file, Comment comment)
         {
-            var fileType = GetFileType(file);
+            var ext = Path.GetExtension(file.FileName).ToLower();
 
-            string filePath = fileType switch
-            {
-            FileType.Text => await SaveFile(file),
+            var fileType = GetFileType(file, ext);
 
-            FileType.JPG => await SaveImage(file, fileType),
-
-            _ => throw new InvalidFileException($"files[{0}]", "Unsupported format")
-            };
+            string filePath = await SaveFile(file);
 
             var commentFile = new CommentFile(comment.Id, filePath, file.FileName, file.Length, comment, fileType);
 
             _db.CommentsFiles.Add(commentFile);
+            await _eventPublisher.Publish(new FileUploadedEvent(filePath, fileType, ext));
+
+            return filePath;
         }
 
+        public async Task CreateMany(List<IFormFile>? files, Comment comment)
+        {
+            var savedFiles = new List<string>();
+            try
+            {
+                foreach (var file in files ?? [])
+                {
+                    var filePath = await Create(file, comment);
+
+                    savedFiles.Add(filePath);
+                }
+            }
+            catch (Exception)
+            {
+                foreach (var filePath in savedFiles)
+                {
+                    if (File.Exists(filePath))
+                        File.Delete(filePath);
+                }
+                throw;
+            }
+        }
         public async Task<ILookup<int, CommentFile>> GetByCommentIds(List<int> commentIds)
         {
             var files = await _db.CommentsFiles
@@ -60,73 +85,20 @@ namespace SPA_приложение.Services
 
             return "/uploads/" + fileName;
         }
-        private static FileType GetFileType(IFormFile file)
+        private static FileType GetFileType(IFormFile file, string ext)
         {
-            var ext = Path.GetExtension(file.FileName)
-                .ToLower();
+            
 
             return ext switch
             {
-                ".jpg" => FileType.JPG,
-                ".png" => FileType.JPG,
-                ".gif" => FileType.JPG,
+                ".jpg" => FileType.Image,
+                ".png" => FileType.Image,
+                ".gif" => FileType.Image,
 
                 ".txt" => FileType.Text,
 
                 _ => throw new InvalidFileException($"files[{0}]", "Unsupported format")
             };
-        }
-
-        private async Task<string> SaveImage(IFormFile file, FileType fyleType)
-        {
-            (string fullPath, string fileName) = GetFullPath(file.FileName);
-            var imageBytes = await ResizeImageIfNeeded(file, fyleType);
-
-            await File.WriteAllBytesAsync(fullPath, imageBytes);
-            return "/uploads/" + fileName;
-        }
-        private static async Task<byte[]> ResizeImageIfNeeded(IFormFile file, FileType fyleType)
-        {
-            using var image = await Image.LoadAsync(file.OpenReadStream());
-
-            if (image.Width <= 320 && image.Height <= 240)
-            {
-                using var original = new MemoryStream();
-
-                await file.CopyToAsync(original);
-
-                return original.ToArray();
-            }
-
-            image.Mutate(x =>
-                x.Resize(new ResizeOptions
-                {
-                    Mode = ResizeMode.Max,
-
-                    Size = new Size(320, 240)
-                }));
-
-            using var output = new MemoryStream();
-
-            switch (fyleType)
-            {
-                case FileType.JPG:
-                    await image.SaveAsJpegAsync(output);
-                    break;
-
-                case FileType.PNG:
-                    await image.SaveAsPngAsync(output);
-                    break;
-
-                case FileType.GIF:
-                    await image.SaveAsGifAsync(output);
-                    break;
-
-                default:
-                    throw new InvalidFileException($"files[{0}]", "Unsupported format");
-            }
-
-            return output.ToArray();
         }
 
         private (string fullPath, string filename) GetFullPath(string filename)

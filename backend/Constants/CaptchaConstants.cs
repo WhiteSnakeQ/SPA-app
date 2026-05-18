@@ -4,6 +4,7 @@
     {
         public const int Width = 220;
         public const int Height = 100;
+        public const int GrayPoint = 1200;
 
         public const string captchaChars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
         public static class Letters

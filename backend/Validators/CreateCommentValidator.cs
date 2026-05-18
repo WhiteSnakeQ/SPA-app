@@ -43,9 +43,7 @@
 
         private bool BeValidFile(IFormFile file)
         {
-            var extension =
-                Path.GetExtension(file.FileName)
-                    .ToLower();
+            var extension = Path.GetExtension(file.FileName).ToLower();
 
             if (extension == ".txt")
                 return file.Length <= 100 * 1024;
@@ -57,8 +55,7 @@
             {
                 using var stream = file.OpenReadStream();
 
-                var imageInfo =
-                    Image.Identify(stream);
+                var imageInfo = Image.Identify(stream);
 
                 return imageInfo != null;
             }

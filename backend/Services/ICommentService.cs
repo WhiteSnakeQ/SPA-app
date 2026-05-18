@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
+using SPA_app.Events.CommentCreated;
+using SPA_app.Events.Interface;
 using SPA_app.Hubs;
 using SPA_приложение.Constants;
 using SPA_приложение.Data;
@@ -27,13 +29,15 @@ namespace SPA_приложение.Services
         private readonly IHubContext<CommentsHub> _hub;
         private readonly ICommentFileService _fileService;
         private readonly ICaptchaService _captchaService;
+        private readonly IEventPublisher _eventPublisher;
 
-        public CommentService(AppDbContext db, IHubContext<CommentsHub> hub, ICommentFileService fileService, ICaptchaService captchaService)
+        public CommentService(AppDbContext db, IHubContext<CommentsHub> hub, ICommentFileService fileService, ICaptchaService captchaService, IEventPublisher eventPublisher)
         {
             _db = db;
             _hub = hub;
             _fileService = fileService;
             _captchaService = captchaService;
+            _eventPublisher = eventPublisher;
         }
 
         public async Task<CommentDTO> Create(CreateCommentDTO dto)
@@ -56,18 +60,17 @@ namespace SPA_приложение.Services
                     .FirstAsync();
             }
 
-            foreach (var file in dto.Files ?? [])
-                await _fileService.Create(file, comment);
+            await _fileService.CreateMany(dto.Files, comment);
 
             await _db.SaveChangesAsync();
 
             await transaction.CommitAsync();
 
-            if (comment.ParentId == null)
-                await _hub.Clients.All.SendAsync("CommentCreated", new CommentDTO(comment));
-            else
-                await _hub.Clients.All.SendAsync("ReplyCreated", new CommentDTO(comment));
-            return new CommentDTO(comment);
+            var comentDTO = new CommentDTO(comment);
+
+            await _eventPublisher.Publish(new CommentCreatedEvent(comentDTO));
+
+            return comentDTO;
         }
 
         public async Task<CommentsPageDTO> Get(int page, string sort, bool desc)
