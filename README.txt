@@ -10,32 +10,56 @@ docker compose up --build
 OR FOR WINDOWS:
 	.\start -> Start the docker
 	.\reset -> Reload all docker data and docker
-	.\stop -> Shout down docker
+	.\stop -> Shutdown docker
 
-After startup the application will be available at: https://tabby-spiffy-blinks.ngrok-free.dev
+
+
+Use your own HTTPS tunnel by configuring:
+https://{addres}
+- NGROK_AUTHTOKEN in `.env`
+- `--url=` in `docker-compose.yml` (ngrok service)
 
 Seed Test Comments
-To generate default comments: https://tabby-spiffy-blinks.ngrok-free.dev/api/comments/seed 
+https://{addres}/api/comments/seed
 Seed works only if there are no comments in the database.
 
 GraphQL endpoint:
 https://tabby-spiffy-blinks.ngrok-free.dev/graphql
 
 Features
-    Cascading comments system
-    Unlimited nesting level for replies
-    Pagination support
-    25 root comments per page
-    Root comments can be sorted by:
+-	Cascading comments system
+-	Unlimited nesting level for replies
+-	Pagination support
+-	25 root comments per page
+-	Root comments can be sorted by:
         Creation date
         Username
         Email
-	Background image resize processing
-	GraphQL API support
-	Lazy loading replies
-	Caching support for paginated comments\Redis caching
-	Realtime comments updates via SignalR
-	Fully dockerized development environment
+-	Background image resize processing
+-	GraphQL API support
+-	Lazy loading replies
+-	Caching support for paginated comments
+-	Redis caching
+-	Realtime comments updates via SignalR
+-	Fully dockerized development environment
+
+Security
+-	 XSS protection
+-	 HTML sanitization
+-	 File validation
+-	 SQL injection protection via EF Core
+-	 CAPTCHA validation
+
+
+Stack
+-	 ASP.NET Core 9
+-	 Angular
+-	 MSSQL Server
+-	 Entity Framework Core
+-	 GraphQL (HotChocolate)
+-	 SignalR
+-	 ImageSharp
+-	 Docker / Docker Compose
 
 Uploaded files are stored in Docker volume: upload_data
 
@@ -48,14 +72,4 @@ with:
 
 - ./uploads:/app/wwwroot/uploads
 
-
-Stack
-	- ASP.NET Core 9
-	- Angular
-	- MSSQL Server
-	- Entity Framework Core
-	- GraphQL (HotChocolate)
-	- SignalR
-	- ImageSharp
-	- Docker / Docker Compose
 
