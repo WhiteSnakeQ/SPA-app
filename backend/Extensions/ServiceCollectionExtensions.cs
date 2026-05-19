@@ -13,6 +13,7 @@ using SPA_app.Services.SeedS;
 using SPA_приложение.Queue;
 using SPA_приложение.Validators;
 using SPA_app.GraphQL;
+using SPA_app.Events.FileUploaded;
 
 namespace SPA_приложение.Extensions
 {
@@ -29,6 +30,8 @@ namespace SPA_приложение.Extensions
             services.AddScoped<IEventPublisher, EventPublisher>();
             services.AddScoped<IEventHandler<CommentCreatedEvent>, CommentCreatedCacheClean>();
             services.AddScoped<IEventHandler<CommentCreatedEvent>, CommentCreatedSignalRHandler>();
+
+            services.AddScoped<IEventHandler<FileUploadedEvent>, FileUploadedHandler>();
 
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddHostedService<QueuedHostedService>();

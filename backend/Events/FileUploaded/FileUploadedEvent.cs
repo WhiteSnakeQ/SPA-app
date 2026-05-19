@@ -11,6 +11,7 @@ namespace SPA_app.Events.FileUploaded
 
         public FileUploadedEvent(string filePath, FileType fileType, string extension )
         {
+            Console.WriteLine("EVENT CREATED  FILEUPLOADED");
             FilePath = filePath;
             FileType = fileType;
             ext = extension;

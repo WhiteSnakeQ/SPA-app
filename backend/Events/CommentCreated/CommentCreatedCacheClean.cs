@@ -17,11 +17,8 @@ namespace SPA_app.Events.CommentCreated
 
         public async Task Handle(CommentCreatedEvent @event)
         {
-            if (@event.Comment.ParentId == null)
-            {
-                foreach (var key in CacheKeys.FirstPageKeys())
-                    await _cacheService.RemoveAsync(key);
-            }
+            foreach (var key in CacheKeys.FirstPageKeys())
+                await _cacheService.RemoveAsync(key);
         }
     }
 }

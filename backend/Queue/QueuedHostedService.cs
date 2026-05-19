@@ -13,11 +13,22 @@ public sealed class QueuedHostedService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        Console.WriteLine("EVENT ExecuteAsync  FILEUPLOADED");
         while (!stoppingToken.IsCancellationRequested)
         {
-            var workItem = await _queue.DequeueAsync(stoppingToken);
+            Console.WriteLine("EVENT WAITING TASK  FILEUPLOADED");
 
-            await workItem(stoppingToken);
+            try
+            {
+                var workItem = await _queue.DequeueAsync(stoppingToken);
+                Console.WriteLine("TASK RECEIVED");
+                await workItem(stoppingToken);
+                Console.WriteLine("TASK COMPLETE");
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
     }
 }

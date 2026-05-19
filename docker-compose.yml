@@ -55,7 +55,8 @@ services:
 
     volumes:
       - ./backend:/src/backend
-      - upload_data:/app/wwwroot/uploads
+      - ./uploads/:/app/wwwroot/uploads
+      # - upload_data:/app/wwwroot/uploads
 
     command: dotnet SPA-app.dll
 
@@ -81,4 +82,4 @@ services:
 
 volumes:
   sql_data:
-  upload_data:
+  # upload_data:

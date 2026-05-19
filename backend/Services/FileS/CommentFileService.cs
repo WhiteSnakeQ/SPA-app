@@ -52,8 +52,9 @@ namespace SPA_app.Services.FileS
             {
                 foreach (var filePath in savedFiles)
                 {
-                    if (File.Exists(filePath))
-                        File.Delete(filePath);
+                    var physicalPath = System.IO.Path.Combine(_env.WebRootPath, filePath.TrimStart('/'));
+                    if (File.Exists(physicalPath))
+                        File.Delete(physicalPath);
                 }
                 throw;
             }
