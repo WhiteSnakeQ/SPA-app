@@ -24,7 +24,7 @@ https://{addres}/api/comments/seed
 Seed works only if there are no comments in the database.
 
 GraphQL endpoint:
-https://tabby-spiffy-blinks.ngrok-free.dev/graphql
+https://{addres}/graphql
 
 Features
 -	Cascading comments system
