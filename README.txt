@@ -13,6 +13,9 @@ Seed Test Comments
 To generate default comments: https://tabby-spiffy-blinks.ngrok-free.dev/api/comments/seed 
 Seed works only if there are no comments in the database.
 
+GraphQL endpoint:
+https://tabby-spiffy-blinks.ngrok-free.dev/graphql
+
 Features
     Cascading comments system
     Unlimited nesting level for replies
@@ -22,6 +25,12 @@ Features
         Creation date
         Username
         Email
+	Background image resize processing
+	GraphQL API support
+	Lazy loading replies
+	Caching support for paginated comments\Redis caching
+	Realtime comments updates via SignalR
+	Fully dockerized development environment
 
 Uploaded files are stored in Docker volume: upload_data
 
@@ -36,9 +45,12 @@ with:
 
 
 Stack
-ASP.NET Core 9
-Angular
-MSSQL Server
-Docker / Docker Compose
-Entity Framework Core
+	- ASP.NET Core 9
+	- Angular
+	- MSSQL Server
+	- Entity Framework Core
+	- GraphQL (HotChocolate)
+	- SignalR
+	- ImageSharp
+	- Docker / Docker Compose
 
