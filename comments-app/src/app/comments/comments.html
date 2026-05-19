@@ -6,12 +6,12 @@
     Add comment
 </button>
 
-<app-comment-form *ngIf="showForm" [parentId]="replyParentId" (created)="onCommentCreated($event)" (closed)="closeForm()">
+<app-comment-form *ngIf="showForm" [parentId]="replyParentId" (created)="onCommentCreated($event)" (closed)="closeForm()" (fileSelecting)="onFileSelecting($event)">
 </app-comment-form>
 
 <div class="comments-container">
 
-    <app-comment-item *ngFor="let comment of comments" [comment]="comment" (sort)="setSort($event)">
+    <app-comment-item *ngFor="let comment of comments" [comment]="comment" (sort)="setSort($event)" (fileSelecting)="onFileSelecting($event)">
     </app-comment-item>
 
 </div>

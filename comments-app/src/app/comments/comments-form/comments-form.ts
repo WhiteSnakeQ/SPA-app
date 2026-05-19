@@ -23,8 +23,10 @@ export class CommentFormComponent
     @Input() parentId: number | null = null;
     @Output() created = new EventEmitter<CommentModel>();
     @Output() closed = new EventEmitter<void>();
+	@Output() fileSelecting = new EventEmitter<boolean>();
+
 	@ViewChild('textArea') textArea!: ElementRef<HTMLTextAreaElement>;
-	
+
 	captchaImage: string = '';
 	form: FormGroup;
 
@@ -138,8 +140,18 @@ export class CommentFormComponent
 		});
 	}
 
+	openFileDialog(): void
+	{
+		this.fileSelecting.emit(true);
+	}
+
 	onFilesSelected(event: Event): void
 	{
+		setTimeout(() =>
+		{
+			this.fileSelecting.emit(false);
+		}, 300);
+		
 		const input = event.target as HTMLInputElement;
 
 		this.fileErrors = []

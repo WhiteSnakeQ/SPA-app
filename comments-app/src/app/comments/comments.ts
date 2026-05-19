@@ -33,7 +33,7 @@ export class CommentsComponent
 		replyParentId: number | null = null;
 		showForm: boolean = false;
 
-		
+		isSelectFile: boolean = false;
 
 		constructor (private commentsService: CommentsService, private cdr: ChangeDetectorRef, private signalr: SignalrService)
 		{
@@ -52,6 +52,11 @@ export class CommentsComponent
 				this.handleVisibilityChange
 			);
 			this.loadComments();
+		}
+
+		onFileSelecting(isSelected: boolean) : void
+		{
+			this.isSelectFile = isSelected;
 		}
 
 		handleVisibilityChange = (): void =>

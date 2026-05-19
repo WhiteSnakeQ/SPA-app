@@ -59,7 +59,7 @@
 
 			
 
-	<app-comment-form *ngIf="showReplyForm" [parentId]="comment.id" (created)="closeForm($event)" (closed)="showReplyForm = false">
+	<app-comment-form *ngIf="showReplyForm" [parentId]="comment.id" (created)="closeForm($event)" (closed)="showReplyForm = false" (fileSelecting)="fileSelecting.emit($event)">
 	</app-comment-form>
 
     <div class="children" *ngIf="comment.children?.length && showChildren">

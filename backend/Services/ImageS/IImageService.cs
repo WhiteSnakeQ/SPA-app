@@ -4,6 +4,6 @@ namespace SPA_app.Services.ImageS
 {
     public interface IImageService
     {
-        Task ResizeImage(string fullPath, FileType fileType, string FileExt);
+        Task ResizeImage(string fullPath, string FileExt);
     }
 }

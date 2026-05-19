@@ -17,11 +17,11 @@ public sealed class ImageService : IImageService
         _env = env;
     }
 
-    public async Task ResizeImage(string fullPath, FileType fileType, string FileExt)
+    public async Task ResizeImage(string fullPath, string fileExt)
     {
         var physicalPath = System.IO.Path.Combine(_env.WebRootPath, fullPath.TrimStart('/'));
-
         using var image = await Image.LoadAsync(physicalPath);
+
         int width = ImageConsts.Width;
         int height = ImageConsts.Height;
 
@@ -35,19 +35,24 @@ public sealed class ImageService : IImageService
                 Size = new Size(width, height)
             }));
 
-        switch (FileExt)
+        var tempPath = physicalPath + ".tmp";
+
+        switch (fileExt)
         {
             case ".jpg":
-                await image.SaveAsJpegAsync(physicalPath);
+                await image.SaveAsJpegAsync(tempPath);
                 break;
 
             case ".png":
-                await image.SaveAsPngAsync(physicalPath);
+                await image.SaveAsPngAsync(tempPath);
                 break;
 
             case ".gif":
-                await image.SaveAsGifAsync(physicalPath);
+                await image.SaveAsGifAsync(tempPath);
                 break;
         }
+
+        File.Delete(physicalPath);
+        File.Move(tempPath, physicalPath);
     }
 }

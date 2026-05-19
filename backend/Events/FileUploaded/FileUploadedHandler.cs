@@ -31,7 +31,7 @@ namespace SPA_app.Events.FileUploaded
 
                     var imageService = scope.ServiceProvider.GetRequiredService<IImageService>();
 
-                    await imageService.ResizeImage(@event.FilePath, @event.FileType, @event.ext);
+                    await imageService.ResizeImage(@event.FilePath, @event.Ext);
                 });
             }
 

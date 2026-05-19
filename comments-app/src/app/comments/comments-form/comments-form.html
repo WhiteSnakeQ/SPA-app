@@ -82,7 +82,7 @@
 				{{	form.get('text')?.errors?.['backend']	}}
 			</div>
 
-		<input type="file" multiple (change)="onFilesSelected($event)">
+		<input type="file" multiple (change)="onFilesSelected($event)" (click)="openFileDialog()">
 		<div *ngFor="let file of files; let i = index">
 
 			<div>

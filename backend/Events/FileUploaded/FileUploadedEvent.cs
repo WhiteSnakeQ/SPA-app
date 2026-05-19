@@ -6,14 +6,14 @@ namespace SPA_app.Events.FileUploaded
     public class FileUploadedEvent : IEvent
     {
         public string FilePath;
-        public string ext;
+        public string Ext;
         public FileType FileType;
 
         public FileUploadedEvent(string filePath, FileType fileType, string extension )
         {
             FilePath = filePath;
             FileType = fileType;
-            ext = extension;
+            Ext = extension;
         }
     }
 }

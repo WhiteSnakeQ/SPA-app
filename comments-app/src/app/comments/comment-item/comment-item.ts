@@ -22,6 +22,7 @@ export class CommentItemComponent
 {
 	@Input() comment!: CommentModel;
 	@Output() sort = new EventEmitter<CommentSorting>();
+	@Output() fileSelecting = new EventEmitter<boolean>();
 
 	showReplyForm: boolean = false;
 	CommentSorting = CommentSorting;
