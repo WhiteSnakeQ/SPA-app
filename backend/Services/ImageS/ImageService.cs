@@ -11,24 +11,20 @@ namespace SPA_app.Services.ImageS;
 public sealed class ImageService : IImageService
 {
     private readonly IWebHostEnvironment _env;
-    private readonly ICacheService _cache;
 
-    public ImageService(IWebHostEnvironment env, ICacheService cache)
+    public ImageService(IWebHostEnvironment env)
     {
         _env = env;
-        _cache = cache;
     }
 
     public async Task ResizeImage(string fullPath, FileType fileType, string FileExt)
     {
         
         var physicalPath = System.IO.Path.Combine(_env.WebRootPath, fullPath.TrimStart('/'));
-        await _cache.SetAsync(physicalPath, physicalPath, TimeSpan.FromMinutes(5));
-        Console.WriteLine(physicalPath);
+
         using var image = await Image.LoadAsync(physicalPath);
         int width = ImageConsts.Width;
         int height = ImageConsts.Height;
-        Console.WriteLine(image.Width.ToString() + " " + image.Height.ToString());
 
         if (image.Width <= width && image.Height <= height)
             return;
@@ -39,7 +35,6 @@ public sealed class ImageService : IImageService
                 Mode = ResizeMode.Max,
                 Size = new Size(width, height)
             }));
-        Console.WriteLine(image.Width.ToString() + " " + image.Height.ToString());
 
         switch (FileExt)
         {

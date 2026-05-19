@@ -22,15 +22,11 @@ namespace SPA_app.Events.FileUploaded
 
         public Task Handle(FileUploadedEvent @event)
         {
-            Console.WriteLine("EVENT HANDLE  FILEUPLOADED");
-
             if (@event.FileType == FileType.Image)
             {
 
                 _queue.Queue(async token =>
                 {
-                    Console.WriteLine("EVENT Queue  FILEUPLOADED");
-
                     using var scope = _scopeFactory.CreateScope();
 
                     var imageService = scope.ServiceProvider.GetRequiredService<IImageService>();
