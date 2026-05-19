@@ -1,10 +1,11 @@
 ﻿namespace SPA_приложение.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
-    using SPA_app.Services;
+    using SPA_app.Services.CaptchaS;
+    using SPA_app.Services.CommentsS;
+    using SPA_app.Services.SeedS;
     using SPA_приложение.DTOs;
     using SPA_приложение.DTOs.Queries;
-    using SPA_приложение.Services;
 
     [ApiController]
     [Route("api/comments")]
@@ -29,8 +30,7 @@
         [HttpGet]
         public async Task<ActionResult<CommentsPageDTO>> Get([FromQuery] GetCommentsQuery query)
         {
-            var result = await _service.Get(query.Page, query.Sort, query.Desc);
-
+            var result = await _service.GetComments(query.Page, query.Sort, query.Desc);
             return Ok(result);
         }
 

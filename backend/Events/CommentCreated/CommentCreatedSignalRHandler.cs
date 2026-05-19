@@ -4,7 +4,7 @@ using SPA_app.Hubs;
 
 namespace SPA_app.Events.CommentCreated
 {
-    public sealed class CommentCreatedSignalRHandler : IEventHandler<CommentCreatedEvent>
+    public class CommentCreatedSignalRHandler : IEventHandler<CommentCreatedEvent>
     {
         private readonly IHubContext<CommentsHub> _hub;
 
@@ -22,3 +22,5 @@ namespace SPA_app.Events.CommentCreated
         }
     }
 }
+
+    

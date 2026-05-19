@@ -15,6 +15,7 @@ namespace SPA_приложение.DTOs
 
         public List<CommentDTO> Children { get; set; } = [];
 
+        public CommentDTO() { }
         public CommentDTO(Comment comment)
         {
             Id = comment.Id;

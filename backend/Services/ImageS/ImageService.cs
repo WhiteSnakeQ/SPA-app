@@ -1,11 +1,9 @@
 ﻿using SixLabors.ImageSharp;
-
 using SixLabors.ImageSharp.Processing;
 using SPA_app.Constants;
-using SPA_app.Services.Interface;
 using SPA_приложение.Enums;
 
-namespace SPA_приложение.Services;
+namespace SPA_app.Services.ImageS;
 
 public sealed class ImageService : IImageService
 {

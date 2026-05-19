@@ -1,6 +1,6 @@
 ﻿using SPA_приложение.Enums;
 
-namespace SPA_app.Services.Interface
+namespace SPA_app.Services.ImageS
 {
     public interface IImageService
     {

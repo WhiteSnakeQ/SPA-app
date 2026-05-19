@@ -2,8 +2,7 @@
 
 namespace SPA_приложение.Queue;
 
-public sealed class QueuedHostedService
-    : BackgroundService
+public sealed class QueuedHostedService : BackgroundService
 {
     private readonly IBackgroundTaskQueue _queue;
 

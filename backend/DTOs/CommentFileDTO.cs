@@ -11,6 +11,8 @@ namespace SPA_приложение.DTOs
         public string FileName { get; set; }
 
         public string FileType { get; set; }
+
+        public CommentFileDTO() { }
         public CommentFileDTO(CommentFile commentFile)
         {
             Id = commentFile.Id;

@@ -1,28 +1,22 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using SixLabors.Fonts;
+﻿using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using SPA_app.Constants;
+using SPA_app.Services.CacheS;
 using SPA_приложение.Constants;
 using SPA_приложение.Exceptions;
 using System.Security.Cryptography;
 
-namespace SPA_приложение.Services
+namespace SPA_app.Services.CaptchaS
 {
-    public interface ICaptchaService
-    {
-        (string id, byte[] image) Generate();
-
-        Task Validate(string id, string answer);
-    }
-
     public class CaptchaService : ICaptchaService
     {
-        private readonly IMemoryCache _cache;
-        public CaptchaService(IMemoryCache cache)
+        private readonly ICacheService _cacheService;
+        public CaptchaService(ICacheService cache)
         {
-            _cache = cache;
+            _cacheService = cache;
         }
         public (string, byte[]) Generate()
         {
@@ -30,28 +24,26 @@ namespace SPA_приложение.Services
 
             var id = Guid.NewGuid().ToString();
 
-            _cache.Set(
-                id,
-                text,
-                TimeSpan.FromMinutes(5));
+            var cacheKey = CacheKeys.CaptchaCacheKey(id);
+            _cacheService.SetAsync(cacheKey, text, TimeSpan.FromMinutes(5));
 
             var image = GenerateImage(text);
 
             return (id, image);
         }
 
-        public Task Validate(string id, string answer)
+        public async Task Validate(string id, string answer)
         {
-            
-            if (!_cache.TryGetValue(id, out string? expected))
+            var cacheKey = CacheKeys.CaptchaCacheKey(id);
+            var expected = await _cacheService.GetAsync<string>(cacheKey);
+
+            if (expected is null)
                 throw new InvalidCaptchaException("Captcha expired");
 
-            _cache.Remove(id);
+            await _cacheService.RemoveAsync(id);
 
             if (!string.Equals(expected, answer, StringComparison.OrdinalIgnoreCase))
                 throw new InvalidCaptchaException("Invalid captcha");
-
-            return Task.CompletedTask;
         }
 
         private string RandomText(int length = 5)
@@ -135,5 +127,4 @@ namespace SPA_приложение.Services
             return stream.ToArray();
         }
     }
-    
 }

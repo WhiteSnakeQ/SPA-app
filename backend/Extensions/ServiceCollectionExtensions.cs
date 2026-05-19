@@ -4,10 +4,13 @@ using SPA_app.Events.CommentCreated;
 using SPA_app.Events.Interface;
 using SPA_app.Events.Publisher;
 using SPA_app.Queue;
-using SPA_app.Services;
-using SPA_app.Services.Interface;
+using SPA_app.Services.CacheS;
+using SPA_app.Services.CaptchaS;
+using SPA_app.Services.FileS;
+using SPA_app.Services.CommentsS;
+using SPA_app.Services.ImageS;
+using SPA_app.Services.SeedS;
 using SPA_приложение.Queue;
-using SPA_приложение.Services;
 using SPA_приложение.Validators;
 
 namespace SPA_приложение.Extensions
@@ -23,10 +26,19 @@ namespace SPA_приложение.Extensions
             services.AddScoped<IImageService, ImageService>();
 
             services.AddScoped<IEventPublisher, EventPublisher>();
+            services.AddScoped<IEventHandler<CommentCreatedEvent>, CommentCreatedCacheClean>();
             services.AddScoped<IEventHandler<CommentCreatedEvent>, CommentCreatedSignalRHandler>();
 
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddHostedService<QueuedHostedService>();
+
+            services.AddScoped<ICacheService, CacheService>();
+
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = "redis:6379";
+                options.InstanceName = "comments_app";
+            });
 
             return services;
         }

@@ -1,14 +1,8 @@
 ﻿using SPA_приложение.Data;
-using SPA_приложение.DTOs;
 using SPA_приложение.Models;
 
-namespace SPA_app.Services
+namespace SPA_app.Services.SeedS
 {
-    public interface ISeedService
-    {
-        Task<List<Comment>?> SeedComments(int number = 35);
-    }
-
     public class SeedService : ISeedService
     {
         private readonly AppDbContext _db;

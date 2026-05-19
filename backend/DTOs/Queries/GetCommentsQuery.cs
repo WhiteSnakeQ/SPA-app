@@ -1,9 +1,11 @@
-﻿namespace SPA_приложение.DTOs.Queries
+﻿using SPA_app.Enums;
+
+namespace SPA_приложение.DTOs.Queries
 {    public class GetCommentsQuery
     {
         public int Page { get; set; } = 0;
 
-        public string Sort { get; set; } = "date";
+        public CommentSorting Sort { get; set; } = CommentSorting.CreatedAt;
 
         public bool Desc { get; set; } = true;
     }

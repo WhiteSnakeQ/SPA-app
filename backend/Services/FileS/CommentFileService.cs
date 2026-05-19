@@ -1,22 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
 using SPA_app.Events.FileUploaded;
 using SPA_app.Events.Interface;
 using SPA_приложение.Data;
-using SPA_приложение.DTOs;
 using SPA_приложение.Enums;
 using SPA_приложение.Exceptions;
 using SPA_приложение.Models;
 
-namespace SPA_приложение.Services
+namespace SPA_app.Services.FileS
 {
-    public interface ICommentFileService
-    {
-        Task<string> Create(IFormFile file, Comment comment);
-        Task CreateMany(List<IFormFile>? file, Comment comment);
-        Task<ILookup<int, CommentFile>> GetByCommentIds(List<int> commentIds);
-    };
     public class CommentFileService : ICommentFileService
     {
         private readonly AppDbContext _db;
@@ -87,7 +78,7 @@ namespace SPA_приложение.Services
         }
         private static FileType GetFileType(IFormFile file, string ext)
         {
-            
+
 
             return ext switch
             {

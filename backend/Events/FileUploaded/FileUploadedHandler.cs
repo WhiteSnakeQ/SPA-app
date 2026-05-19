@@ -3,7 +3,7 @@ using SixLabors.ImageSharp;
 using SPA_app.Events.CommentCreated;
 using SPA_app.Events.Interface;
 using SPA_app.Queue;
-using SPA_app.Services.Interface;
+using SPA_app.Services.ImageS;
 using SPA_приложение.Enums;
 using SPA_приложение.Exceptions;
 

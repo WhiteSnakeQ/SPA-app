@@ -1,43 +1,34 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
+using SPA_app.Constants;
+using SPA_app.Enums;
 using SPA_app.Events.CommentCreated;
 using SPA_app.Events.Interface;
 using SPA_app.Hubs;
+using SPA_app.Services.CacheS;
+using SPA_app.Services.CaptchaS;
+using SPA_app.Services.FileS;
 using SPA_приложение.Constants;
 using SPA_приложение.Data;
 using SPA_приложение.DTOs;
-using SPA_приложение.Enums;
-using SPA_приложение.Helpers;
 using SPA_приложение.Models;
-using System.Linq;
-using System.Linq.Expressions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
-namespace SPA_приложение.Services
+namespace SPA_app.Services.CommentsS
 {
-    public interface ICommentService
-    {
-        Task<CommentDTO> Create(CreateCommentDTO dto);
-        Task<CommentsPageDTO> Get(int page, string sort, bool desc);
-    };
-
     public class CommentService : ICommentService
     {
         private readonly AppDbContext _db;
-        private readonly IHubContext<CommentsHub> _hub;
         private readonly ICommentFileService _fileService;
         private readonly ICaptchaService _captchaService;
         private readonly IEventPublisher _eventPublisher;
-
-        public CommentService(AppDbContext db, IHubContext<CommentsHub> hub, ICommentFileService fileService, ICaptchaService captchaService, IEventPublisher eventPublisher)
+        private readonly ICacheService _cacheService;
+        public CommentService(AppDbContext db, IHubContext<CommentsHub> hub, ICommentFileService fileService, ICaptchaService captchaService, IEventPublisher eventPublisher, ICacheService cacheService)
         {
             _db = db;
-            _hub = hub;
             _fileService = fileService;
             _captchaService = captchaService;
             _eventPublisher = eventPublisher;
+            _cacheService = cacheService;
         }
 
         public async Task<CommentDTO> Create(CreateCommentDTO dto)
@@ -73,26 +64,48 @@ namespace SPA_приложение.Services
             return comentDTO;
         }
 
-        public async Task<CommentsPageDTO> Get(int page, string sort, bool desc)
+        public async Task<CommentsPageDTO> GetComments(int page, CommentSorting sort, bool desc)
+        {
+            string cacheKey = CacheKeys.CommentsCacheKey(page, sort, desc);
+            var cached = await _cacheService.GetAsync<CommentsPageDTO>(cacheKey);
+
+            if (cached is not null)
+                return cached;
+
+            var result = await Get(page, sort, desc);
+
+            await _cacheService.SetAsync(cacheKey, result, TimeSpan.FromMinutes(1));
+            return result;
+        }
+        public async Task<CommentsPageDTO> Get(int page, CommentSorting sort, bool desc)
         {
             int pageSize = PaginationConstants.DefaultPageSize;
 
             int offset = page * pageSize;
 
-            Expression<Func<Comment, object>> keySelector = sort switch
-            {
-                "username" => x => x.UserName,
-                "email" => x => x.Email,
-                _ => x => x.CreatedAt
-            };
-
             var query = _db.Comments
                 .AsNoTracking()
                 .Where(x => x.ParentId == null);
 
-            query = desc
-                ? query.OrderByDescending(keySelector)
-                : query.OrderBy(keySelector);
+            query = sort switch
+            {
+                CommentSorting.CreatedAt =>
+                    desc
+                        ? query.OrderByDescending(x => x.CreatedAt)
+                        : query.OrderBy(x => x.CreatedAt),
+
+                CommentSorting.UserName =>
+                    desc
+                        ? query.OrderByDescending(x => x.UserName)
+                        : query.OrderBy(x => x.UserName),
+
+                CommentSorting.Email =>
+                    desc
+                        ? query.OrderByDescending(x => x.Email)
+                        : query.OrderBy(x => x.Email),
+
+                _ => query.OrderByDescending(x => x.CreatedAt)
+            };
 
             var roots = await query
                 .Skip(offset)
@@ -135,8 +148,8 @@ namespace SPA_приложение.Services
                 .Select(f => new CommentFileDTO(f))
                 .ToList());
 
-            var tree = BuildTree(childrenLookup, fileDtoDict, keySelector.Compile(), desc);
-            
+            var tree = BuildTree(childrenLookup, fileDtoDict, sort, desc);
+
             return new CommentsPageDTO
             {
                 Items = tree,
@@ -147,16 +160,26 @@ namespace SPA_приложение.Services
         private static List<CommentDTO> BuildTree(
             ILookup<int?, Comment> childrenLookup,
             Dictionary<int, List<CommentFileDTO>> fileDtoDict,
-            Func<Comment, object> keySelector,
+            CommentSorting sort,
             bool desc,
             int? parentId = null)
         {
-            var children = desc
-                ? childrenLookup[parentId]
-                    .OrderByDescending(keySelector)
+            var children = sort switch
+            {
+                CommentSorting.CreatedAt => desc
+                        ? childrenLookup[parentId].OrderByDescending(x => x.CreatedAt)
+                        : childrenLookup[parentId].OrderBy(x => x.CreatedAt),
 
-                : childrenLookup[parentId]
-                    .OrderBy(keySelector);
+                CommentSorting.UserName => desc
+                        ? childrenLookup[parentId].OrderByDescending(x => x.UserName)
+                        : childrenLookup[parentId].OrderBy(x => x.UserName),
+
+                CommentSorting.Email => desc
+                        ? childrenLookup[parentId].OrderByDescending(x => x.Email)
+                        : childrenLookup[parentId].OrderBy(x => x.Email),
+
+                _ => childrenLookup[parentId].OrderByDescending(x => x.CreatedAt)
+            };
 
             return children
                 .Select(x => new CommentDTO(
@@ -166,7 +189,7 @@ namespace SPA_приложение.Services
                     BuildTree(
                         childrenLookup,
                         fileDtoDict,
-                        x => x.CreatedAt,
+                        CommentSorting.CreatedAt,
                         false,
                         x.Id
                     )))
@@ -174,4 +197,3 @@ namespace SPA_приложение.Services
         }
     }
 }
-    
