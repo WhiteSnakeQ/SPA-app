@@ -23,7 +23,8 @@ export interface CommentModel
 
     createdAt: Date;
 
-    files: FileModel[];
+    files?: FileModel[];
 
-    children: CommentModel[];
+    children?: CommentModel[];
+	replyCount: number;
 }

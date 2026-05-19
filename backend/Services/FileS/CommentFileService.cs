@@ -22,7 +22,7 @@ namespace SPA_app.Services.FileS
 
         public async Task<string> Create(IFormFile file, Comment comment)
         {
-            var ext = Path.GetExtension(file.FileName).ToLower();
+            var ext = System.IO.Path.GetExtension(file.FileName).ToLower();
 
             var fileType = GetFileType(file, ext);
 
@@ -94,12 +94,12 @@ namespace SPA_app.Services.FileS
 
         private (string fullPath, string filename) GetFullPath(string filename)
         {
-            var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
+            var uploadsFolder = System.IO.Path.Combine(_env.WebRootPath, "uploads");
             Directory.CreateDirectory(uploadsFolder);
 
-            var _fileName = Guid.NewGuid().ToString() + Path.GetExtension(filename);
+            var _fileName = Guid.NewGuid().ToString() + System.IO.Path.GetExtension(filename);
 
-            return (Path.Combine(uploadsFolder, _fileName), _fileName);
+            return (System.IO.Path.Combine(uploadsFolder, _fileName), _fileName);
         }
     }
 }

@@ -10,6 +10,7 @@ namespace SPA_приложение.DTOs
         public string UserName { get; set; }
         public string Email { get; set; }
         public string Text { get; set; }
+        public int ReplyCount { get; set; } = 0;
         public DateTime CreatedAt { get; set; }
         public List<CommentFileDTO> Files { get; set; } = [];
 
@@ -40,7 +41,7 @@ namespace SPA_приложение.DTOs
             }
         }
 
-        public CommentDTO(Comment comment, List<CommentFileDTO> files, List<CommentDTO> children)
+        public CommentDTO(Comment comment, List<CommentFileDTO> files, List<CommentDTO> children, int replyCount = 0)
         {
             Id = comment.Id;
             ParentId = comment.ParentId;
@@ -48,6 +49,8 @@ namespace SPA_приложение.DTOs
             Email = comment.Email;
             Text = comment.Text;
             CreatedAt = comment.CreatedAt;
+
+            ReplyCount = replyCount;
 
             Files = files;
             Children = children;

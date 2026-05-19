@@ -12,6 +12,7 @@ using SPA_app.Services.ImageS;
 using SPA_app.Services.SeedS;
 using SPA_приложение.Queue;
 using SPA_приложение.Validators;
+using SPA_app.GraphQL;
 
 namespace SPA_приложение.Extensions
 {
@@ -34,10 +35,12 @@ namespace SPA_приложение.Extensions
 
             services.AddScoped<ICacheService, CacheService>();
 
+            services.AddGraphQLServer().AddQueryType<CommentGQL>();
+
             services.AddStackExchangeRedisCache(options =>
             {
                 options.Configuration = "redis:6379";
-                options.InstanceName = "comments_app";
+                options.InstanceName = "SPA-app";
             });
 
             return services;

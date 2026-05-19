@@ -43,7 +43,7 @@
 
         private bool BeValidFile(IFormFile file)
         {
-            var extension = Path.GetExtension(file.FileName).ToLower();
+            var extension = System.IO.Path.GetExtension(file.FileName).ToLower();
 
             if (extension == ".txt")
                 return file.Length <= 100 * 1024;

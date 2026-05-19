@@ -5,6 +5,7 @@ import { CommentsService } from '../services/comments';
 import { SignalrService } from '../services/signalr';
 import { CommentItemComponent } from './comment-item/comment-item';
 import { CommentFormComponent } from './comments-form/comments-form'
+import { CommentSorting } from '../enums/sorting';
 
 @Component({
     selector: 'app-comments',
@@ -26,7 +27,7 @@ export class CommentsComponent
 		hasNextPage: boolean = false;
 
 		page: number = 0;
-		sortField: 'userName' | 'email' | 'createdAt' = 'createdAt';
+		sortField: CommentSorting = CommentSorting.CREATED_AT;
 		sortDesc: boolean = true;
 
 		replyParentId: number | null = null;
@@ -34,8 +35,7 @@ export class CommentsComponent
 
 		
 
-		constructor
-		(private commentsService: CommentsService, private cdr: ChangeDetectorRef, private signalr: SignalrService)
+		constructor (private commentsService: CommentsService, private cdr: ChangeDetectorRef, private signalr: SignalrService)
 		{
 		}
 
@@ -65,10 +65,12 @@ export class CommentsComponent
 		loadComments(): void
 		{
 			this.commentsService
-				.getComments(this.page, this.sortField, this.sortDesc)
+				.getCommentsGraphQL(this.page, this.sortField, this.sortDesc)
 				.subscribe({
-					next: data =>
+					next: response =>
 					{
+						const data = response.data.comments;
+
 						this.comments = data.items;
 						this.hasNextPage = data.hasNextPage;
 						this.cdr.detectChanges();
@@ -115,7 +117,7 @@ export class CommentsComponent
 		{
 			return (
 				this.page === 0 &&
-				this.sortField === 'createdAt' &&
+				this.sortField === CommentSorting.CREATED_AT &&
 				this.sortDesc
 			);
 		}
@@ -135,29 +137,32 @@ export class CommentsComponent
 		onReplyCreatedSignal(reply: CommentModel): void
 		{
 			
-			const parent = this.findComment(this.comments,	reply.parentId);
+			const parent = this.findComment(reply.parentId, this.comments);
     		if (!parent)
         		return;
 
-			parent.children.push(reply);
+			parent.replyCount += 1; 
+			parent.children?.unshift(reply);
 			this.cdr.detectChanges();
 		}
 
-		findComment(comments: CommentModel[], parentId: number) : CommentModel | null
+		findComment(parentId: number, comments?: CommentModel[]) : CommentModel | null
 		{
+			if (!comments)
+				return null;
 			for (const comment of comments)
 			{
 				if (comment.id == parentId)
 					return comment;
 
-				const children = this.findComment(comment.children,	parentId);
+				const children = this.findComment(parentId, comment.children);
 				if (children)
 					return children;
 			}
 			return null;
 		}
 
-		setSort (field: 'userName' | 'email' | 'createdAt'): void
+		setSort (field: CommentSorting): void
 		{
 			this.page = 0
 			if (this.sortField === field)

@@ -9,6 +9,7 @@ namespace SPA_app.Services.CommentsS
     {
         Task<CommentDTO> Create(CreateCommentDTO dto);
         Task<CommentsPageDTO> GetComments(int page, CommentSorting sort, bool desc);
+        Task<List<CommentDTO>> GetReply(int comment_id);
     };
 }
     

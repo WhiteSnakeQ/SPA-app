@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { CommentsResponseModel } from '../models/comments-response';
 import { CreateCommentModel } from '../models/create-comment';
 import { CommentModel } from '../models/comment';
+import { GET_COMMENTS, GET_REPLY } from '../graphql/commentQl';
 
 @Injectable({
     providedIn: 'root'
@@ -12,9 +13,48 @@ import { CommentModel } from '../models/comment';
 export class CommentsService
 {
     private apiUrl = '/api/comments';
+	private apiUrlGQL = "/graphql"
 
     constructor(private http: HttpClient)
     {
+    }
+
+	getCommentsGraphQL(page: number, sort: string, desc: boolean) : Observable<any>
+    {
+        return this.http.post<any>
+        (
+            this.apiUrlGQL,
+            {
+                query: GET_COMMENTS,
+				variables:
+				{
+					input:
+					{
+						page: page,
+						sort: sort,
+						desc: desc
+					}
+				}
+            }
+        );
+    }
+
+	getReplyCommentsGQL(CommentId: number) : Observable<any>
+    {
+        return this.http.post<any>
+        (
+            this.apiUrlGQL,
+            {
+                query: GET_REPLY,
+				variables:
+				{
+					input:
+					{
+						commentId: CommentId
+					}
+				}
+            }
+        );
     }
 
     getComments(page: number, sort: string, desc: boolean) : Observable<CommentsResponseModel>

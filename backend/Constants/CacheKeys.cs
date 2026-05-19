@@ -18,9 +18,9 @@ namespace SPA_app.Constants
 
             yield return CommentsCacheKey(0, CommentSorting.CreatedAt, false);
 
-            yield return CommentsCacheKey(0, CommentSorting.UserName, true);
+            yield return CommentsCacheKey(0, CommentSorting.userName, true);
 
-            yield return CommentsCacheKey(0, CommentSorting.UserName, false);
+            yield return CommentsCacheKey(0, CommentSorting.userName, false);
 
             yield return CommentsCacheKey(0, CommentSorting.Email, true);
 

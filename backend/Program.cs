@@ -47,6 +47,8 @@ namespace SPA_приложение
             }
             else
             {
+                app.UseSwagger();
+                app.UseSwaggerUI();
                 //app.UseHttpsRedirection();
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
@@ -64,6 +66,7 @@ namespace SPA_приложение
             app.UseAuthorization();
             app.MapControllers();
 
+            app.MapGraphQL();
             app.MapHub<CommentsHub>("/commentsHub");
 
             app.MapFallbackToFile("index.html");

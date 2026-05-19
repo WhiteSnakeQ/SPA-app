@@ -3,7 +3,7 @@
     public enum CommentSorting
     {
         CreatedAt,
-        UserName,
+        userName,
         Email
     }
 }

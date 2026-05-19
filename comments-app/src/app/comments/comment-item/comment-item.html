@@ -2,17 +2,17 @@
 
     <div class="comment-header">
 
-        <span class="clickable"	(click)="sort.emit('userName')">
+        <span class="clickable"	(click)="sort.emit(CommentSorting.USER_NAME)">
 
 		{{ comment.userName }}
 
 		</span>
 
-		<span class="clickable"	(click)="sort.emit('email')">
+		<span class="clickable"	(click)="sort.emit(CommentSorting.EMAIL)">
             {{ comment.email }}
         </span>
 
-        <span class="clickable"	(click)="sort.emit('createdAt')">
+        <span class="clickable"	(click)="sort.emit(CommentSorting.CREATED_AT)">
             {{ comment.createdAt | date:'dd.MM.yyyy HH:mm' }}
         </span>
 
@@ -24,7 +24,7 @@
     <div class="comment-body" [innerHTML]="comment.text">
     </div>
 
-	<div class="comment-files" *ngIf="comment.files.length">
+	<div class="comment-files" *ngIf="comment.files?.length">
 		<div class="comment-files">
 			<div
 				*ngFor="let file of comment.files"
@@ -51,14 +51,19 @@
 			</div>
 		</div>
 	</div>
+	<button *ngIf="comment.replyCount > 0" class="reply-button" (click)="showChildrens()"> 
+		{{ showChildren
+        ? 'Hide replies'
+        : 'Show replies (' + comment.replyCount + ')' }}
+	</button>
 
 			
 
-	<app-comment-form *ngIf="showReplyForm" [parentId]="comment.id" (created)="createdReply($event)" (closed)="showReplyForm = false">
+	<app-comment-form *ngIf="showReplyForm" [parentId]="comment.id" (created)="closeForm($event)" (closed)="showReplyForm = false">
 	</app-comment-form>
 
-    <div class="children" *ngIf="comment.children.length">
-        <app-comment-item *ngFor="let child of comment.children" [comment]="child" (sort)="sort.emit('createdAt')" (reply)="openReply()">
+    <div class="children" *ngIf="comment.children?.length && showChildren">
+        <app-comment-item *ngFor="let child of comment.children" [comment]="child" (sort)="sort.emit($event)" (reply)="openReply()">
         </app-comment-item>
     </div>
 

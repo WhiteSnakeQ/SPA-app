@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using GreenDonut;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using SPA_app.Constants;
 using SPA_app.Enums;
@@ -73,10 +74,38 @@ namespace SPA_app.Services.CommentsS
                 return cached;
 
             var result = await Get(page, sort, desc);
-
+            
             await _cacheService.SetAsync(cacheKey, result, TimeSpan.FromMinutes(1));
             return result;
         }
+
+        public async Task<List<CommentDTO>> GetReply(int comment_id)
+        {
+            var childrens = await _db.Comments
+                .AsNoTracking()
+                .Where(x => x.ParentId == comment_id)
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync();
+
+            var commentIds = childrens.Select(x => x.Id).ToList();
+
+            var filesLookup = await _fileService.GetByCommentIds(commentIds);
+            var fileDtoDict = filesLookup.ToDictionary(x => x.Key, x => x
+                .Select(f => new CommentFileDTO(f))
+                .ToList());
+
+            return childrens
+                .Select(x =>
+                {
+                    var dto = new CommentDTO(x);
+
+                    dto.Files = fileDtoDict.GetValueOrDefault(x.Id, []);
+
+                    return dto;
+                })
+                .ToList();
+        }
+        
         public async Task<CommentsPageDTO> Get(int page, CommentSorting sort, bool desc)
         {
             int pageSize = PaginationConstants.DefaultPageSize;
@@ -94,7 +123,7 @@ namespace SPA_app.Services.CommentsS
                         ? query.OrderByDescending(x => x.CreatedAt)
                         : query.OrderBy(x => x.CreatedAt),
 
-                CommentSorting.UserName =>
+                CommentSorting.userName =>
                     desc
                         ? query.OrderByDescending(x => x.UserName)
                         : query.OrderBy(x => x.UserName),
@@ -131,6 +160,20 @@ namespace SPA_app.Services.CommentsS
                 .Select(x => x.RootId)
                 .ToList();
 
+            var replyCountsDict = await _db.Comments.Where(x =>
+                x.ParentId != null
+                && rootIds.Contains(x.ParentId.Value))
+                    .GroupBy(x => x.ParentId)
+                    .Select(g => new
+                    {
+                        ParentId = g.Key!.Value,
+
+                        Count = g.Count()
+                    })
+                    .ToDictionaryAsync(
+                        x => x.ParentId,
+                        x => x.Count);
+
             var comments = await _db.Comments
                 .AsNoTracking()
                 .Where(c => rootIds.Contains(c.RootId))
@@ -148,20 +191,22 @@ namespace SPA_app.Services.CommentsS
                 .Select(f => new CommentFileDTO(f))
                 .ToList());
 
-            var tree = BuildTree(childrenLookup, fileDtoDict, sort, desc);
-
+            var tree = BuildTree(childrenLookup, fileDtoDict, sort, desc, replyCountsDict);
+            
             return new CommentsPageDTO
             {
                 Items = tree,
                 HasNextPage = hasNextPage
             };
         }
+        
 
         private static List<CommentDTO> BuildTree(
             ILookup<int?, Comment> childrenLookup,
             Dictionary<int, List<CommentFileDTO>> fileDtoDict,
             CommentSorting sort,
             bool desc,
+            Dictionary<int, int> replyCountsDict,
             int? parentId = null)
         {
             var children = sort switch
@@ -170,7 +215,7 @@ namespace SPA_app.Services.CommentsS
                         ? childrenLookup[parentId].OrderByDescending(x => x.CreatedAt)
                         : childrenLookup[parentId].OrderBy(x => x.CreatedAt),
 
-                CommentSorting.UserName => desc
+                CommentSorting.userName => desc
                         ? childrenLookup[parentId].OrderByDescending(x => x.UserName)
                         : childrenLookup[parentId].OrderBy(x => x.UserName),
 
@@ -191,8 +236,10 @@ namespace SPA_app.Services.CommentsS
                         fileDtoDict,
                         CommentSorting.CreatedAt,
                         false,
+                        replyCountsDict,
                         x.Id
-                    )))
+                    ),
+                    replyCountsDict.GetValueOrDefault(x.Id, 0)))
                 .ToList();
         }
     }
