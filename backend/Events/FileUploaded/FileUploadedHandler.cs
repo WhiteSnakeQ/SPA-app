@@ -2,7 +2,8 @@
 using SixLabors.ImageSharp;
 using SPA_app.Events.CommentCreated;
 using SPA_app.Events.Interface;
-using SPA_app.Queue;
+using SPA_app.RabbitMQ.Messages;
+using SPA_app.RabbitMQ.Publisher;
 using SPA_app.Services.ImageS;
 using SPA_приложение.Enums;
 using SPA_приложение.Exceptions;
@@ -11,13 +12,10 @@ namespace SPA_app.Events.FileUploaded
 {
     public class FileUploadedHandler : IEventHandler<FileUploadedEvent>
     {
-        private readonly IBackgroundTaskQueue _queue;
-        private readonly IServiceScopeFactory _scopeFactory;
-
-        public FileUploadedHandler(IBackgroundTaskQueue queue, IServiceScopeFactory scopeFactory)
+        private readonly IMessagePublisher _publisher;
+        public FileUploadedHandler(IMessagePublisher publisher)
         {
-            _queue = queue;
-            _scopeFactory = scopeFactory;
+            _publisher = publisher;
         }
 
         public Task Handle(FileUploadedEvent @event)
@@ -25,16 +23,12 @@ namespace SPA_app.Events.FileUploaded
             if (@event.FileType == FileType.Image)
             {
 
-                _queue.Queue(async token =>
+                _publisher.Publish(new ImageResizeMessage
                 {
-                    using var scope = _scopeFactory.CreateScope();
-
-                    var imageService = scope.ServiceProvider.GetRequiredService<IImageService>();
-
-                    await imageService.ResizeImage(@event.FilePath, @event.Ext);
+                    FullPath = @event.FilePath,
+                    FileExt = @event.Ext
                 });
             }
-
             return Task.CompletedTask;
         }
     }

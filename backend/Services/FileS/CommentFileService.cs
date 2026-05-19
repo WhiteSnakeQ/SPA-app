@@ -32,7 +32,7 @@ namespace SPA_app.Services.FileS
 
             _db.CommentsFiles.Add(commentFile);
             await _eventPublisher.Publish(new FileUploadedEvent(filePath, fileType, ext));
-
+            
             return filePath;
         }
 

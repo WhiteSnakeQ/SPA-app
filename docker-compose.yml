@@ -3,13 +3,11 @@ services:
   db:
     image: mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04
 
+    container_name: comments-db
+  
     environment:
       SA_PASSWORD: ${SA_PASSWORD}
       ACCEPT_EULA: "Y"
-
-    container_name: comments-db
-
-    restart: unless-stopped
 
     ports:
       - "1433:1433"
@@ -24,10 +22,15 @@ services:
       retries: 15
       start_period: 40s
 
+    restart: unless-stopped
+
   redis:
     image: redis:7-alpine
 
-    container_name: redis_cache
+    container_name: comments-redis_cache
+
+    ports:
+      - "6379:6379"
 
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -35,15 +38,41 @@ services:
       timeout: 3s
       retries: 5
 
-    ports:
-      - "6379:6379"
-
     restart: unless-stopped
 
+  rabbitmq:
+    image: rabbitmq:3-management
+
+    container_name: comments-rabbitmq
+
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    restart: unless-stopped
+      
   app:
     build:
       context: .
 
+    container_name: comments-app
+    
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=db;Database=${DB_NAME};User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True"
+    
     ports:
       - "8080:8080"
 
@@ -52,6 +81,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      rabbitmq: 
+        condition: service_healthy
 
     volumes:
       - ./backend:/src/backend
@@ -59,8 +90,7 @@ services:
 
     command: dotnet SPA-app.dll
 
-    environment:
-      ConnectionStrings__DefaultConnection: "Server=db;Database=${DB_NAME};User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True"
+    restart: unless-stopped
 
   ngrok:
     image: ngrok/ngrok:3
@@ -79,6 +109,10 @@ services:
     ports:
       - "4040:4040"
 
+    restart: unless-stopped
+
+
 volumes:
   sql_data:
   upload_data:
+  rabbitmq_data:

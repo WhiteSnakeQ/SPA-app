@@ -1,19 +1,19 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
 using SPA_app.Events.CommentCreated;
+using SPA_app.Events.FileUploaded;
 using SPA_app.Events.Interface;
 using SPA_app.Events.Publisher;
-using SPA_app.Queue;
+using SPA_app.GraphQL;
+using SPA_app.RabbitMQ.HostedService;
+using SPA_app.RabbitMQ.Publisher;
 using SPA_app.Services.CacheS;
 using SPA_app.Services.CaptchaS;
-using SPA_app.Services.FileS;
 using SPA_app.Services.CommentsS;
+using SPA_app.Services.FileS;
 using SPA_app.Services.ImageS;
 using SPA_app.Services.SeedS;
-using SPA_приложение.Queue;
 using SPA_приложение.Validators;
-using SPA_app.GraphQL;
-using SPA_app.Events.FileUploaded;
 
 namespace SPA_приложение.Extensions
 {
@@ -33,8 +33,8 @@ namespace SPA_приложение.Extensions
 
             services.AddScoped<IEventHandler<FileUploadedEvent>, FileUploadedHandler>();
 
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
-            services.AddHostedService<QueuedHostedService>();
+            services.AddSingleton<IMessagePublisher, RabbitMqPublisher>();
+            services.AddHostedService<ImageResizeConsumer>();
 
             services.AddScoped<ICacheService, CacheService>();
 
