@@ -19,7 +19,6 @@ public sealed class ImageService : IImageService
 
     public async Task ResizeImage(string fullPath, FileType fileType, string FileExt)
     {
-        
         var physicalPath = System.IO.Path.Combine(_env.WebRootPath, fullPath.TrimStart('/'));
 
         using var image = await Image.LoadAsync(physicalPath);
@@ -28,7 +27,7 @@ public sealed class ImageService : IImageService
 
         if (image.Width <= width && image.Height <= height)
             return;
-        
+
         image.Mutate(x =>
             x.Resize(new ResizeOptions
             {

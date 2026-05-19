@@ -7,6 +7,11 @@ The project runs entirely in Docker.
 From the project root folder execute:
 docker compose up --build
 
+OR FOR WINDOWS:
+	.\start -> Start the docker
+	.\reset -> Reload all docker data and docker
+	.\stop -> Shout down docker
+
 After startup the application will be available at: https://tabby-spiffy-blinks.ngrok-free.dev
 
 Seed Test Comments

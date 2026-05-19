@@ -8,8 +8,8 @@ namespace SPA_app.Services.CommentsS
     public interface ICommentService
     {
         Task<CommentDTO> Create(CreateCommentDTO dto);
-        Task<CommentsPageDTO> GetComments(int page, CommentSorting sort, bool desc);
-        Task<List<CommentDTO>> GetReply(int comment_id);
+        Task<CommentsPageDTO> GetCommentsCache(int page, CommentSorting sort, bool desc);
+        Task<List<CommentDTO>> GetReplyCache(int comment_id);
     };
 }
     

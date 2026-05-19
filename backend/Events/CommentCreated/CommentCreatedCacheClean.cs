@@ -19,6 +19,11 @@ namespace SPA_app.Events.CommentCreated
         {
             foreach (var key in CacheKeys.FirstPageKeys())
                 await _cacheService.RemoveAsync(key);
+            if (@event.Comment.ParentId != null)
+            {
+                string cacheKey = CacheKeys.ReplyCacheKey(@event.Comment.ParentId ?? 0);
+                await _cacheService.RemoveAsync(cacheKey);
+            }
         }
     }
 }

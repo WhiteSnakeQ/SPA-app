@@ -10,13 +10,13 @@ namespace SPA_app.GraphQL
     {
         public async Task<CommentsPageDTO>? GetComments(GetCommentsQuery input, [Service] ICommentService comments)
         {
-            var result = await comments.GetComments(input.Page, input.Sort, input.Desc);
+            var result = await comments.GetCommentsCache(input.Page, input.Sort, input.Desc);
             return result;
         }
 
         public async Task<List<CommentDTO>>? GetReplyComments(GetReplyCommentsQueryInput input, [Service] ICommentService comments)
         {
-            var result = await comments.GetReply(input.CommentId);
+            var result = await comments.GetReplyCache(input.CommentId);
             return result;
         }
     }

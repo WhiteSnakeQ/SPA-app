@@ -30,7 +30,7 @@
         [HttpGet]
         public async Task<ActionResult<CommentsPageDTO>> Get([FromQuery] GetCommentsQuery query)
         {
-            var result = await _service.GetComments(query.Page, query.Sort, query.Desc);
+            var result = await _service.GetCommentsCache(query.Page, query.Sort, query.Desc);
             return Ok(result);
         }
 

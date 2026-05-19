@@ -8,6 +8,10 @@ namespace SPA_app.Constants
         {
             return $"comments_{page}_{sorting}_{desc}";
         }
+        public static string ReplyCacheKey(int commentId)
+        {
+            return $"commentsReply_{commentId}";
+        }
         public static string CaptchaCacheKey(string id)
         {
             return $"captcha_{id}";

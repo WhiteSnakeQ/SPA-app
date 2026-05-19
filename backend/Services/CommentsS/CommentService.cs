@@ -65,7 +65,7 @@ namespace SPA_app.Services.CommentsS
             return comentDTO;
         }
 
-        public async Task<CommentsPageDTO> GetComments(int page, CommentSorting sort, bool desc)
+        public async Task<CommentsPageDTO> GetCommentsCache(int page, CommentSorting sort, bool desc)
         {
             string cacheKey = CacheKeys.CommentsCacheKey(page, sort, desc);
             var cached = await _cacheService.GetAsync<CommentsPageDTO>(cacheKey);
@@ -76,6 +76,20 @@ namespace SPA_app.Services.CommentsS
             var result = await Get(page, sort, desc);
             
             await _cacheService.SetAsync(cacheKey, result, TimeSpan.FromMinutes(1));
+            return result;
+        }
+
+        public async Task<List<CommentDTO>> GetReplyCache(int comment_id)
+        {
+            string cacheKey = CacheKeys.ReplyCacheKey(comment_id);
+            var cached = await _cacheService.GetAsync<List<CommentDTO>>(cacheKey);
+
+            if (cached is not null)
+                return cached;
+
+            var result = await GetReply(comment_id);
+
+            await _cacheService.SetAsync(cacheKey, result, TimeSpan.FromSeconds(30));
             return result;
         }
 
@@ -94,13 +108,20 @@ namespace SPA_app.Services.CommentsS
                 .Select(f => new CommentFileDTO(f))
                 .ToList());
 
+            var replyCounts = await _db.Comments
+                .Where(x => x.ParentId != null)
+                .GroupBy(x => x.ParentId)
+                .ToDictionaryAsync(
+                    g => g.Key!.Value,
+                    g => g.Count());
+
             return childrens
                 .Select(x =>
                 {
                     var dto = new CommentDTO(x);
 
-                    dto.Files = fileDtoDict.GetValueOrDefault(x.Id, []);
-
+                    dto.Files = fileDtoDict.GetValueOrDefault(x.Id, new List<CommentFileDTO>());
+                    dto.ReplyCount = replyCounts.GetValueOrDefault(x.Id, 0);
                     return dto;
                 })
                 .ToList();
