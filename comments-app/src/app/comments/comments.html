@@ -2,6 +2,26 @@
     Comments
 </h1>
 
+<div class="search-container">
+	<input type="text" class="search-input"	placeholder="Search comments..." (input)="onSearch($event)"/>
+
+	<div class="search-results" *ngIf="searchResults.length > 0">
+		<div class="search-item" *ngFor="let item of searchResults">
+			<div class="search-user">
+				{{ item.userName }}
+			</div>
+
+			<div class="search-text">
+				{{ item.text }}
+			</div>
+
+			<div class="search-email">
+				{{ item.email }}
+			</div>
+		</div>
+	</div>
+</div>
+
 <button class="add-comment-button" (click)="openReply(null)">
     Add comment
 </button>

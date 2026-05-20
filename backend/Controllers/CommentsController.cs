@@ -1,8 +1,10 @@
 ﻿namespace SPA_приложение.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
+    using SPA_app.DTOs.Queries;
     using SPA_app.Services.CaptchaS;
     using SPA_app.Services.CommentsS;
+    using SPA_app.Services.ElasticSearch;
     using SPA_app.Services.SeedS;
     using SPA_приложение.DTOs;
     using SPA_приложение.DTOs.Queries;
@@ -13,11 +15,12 @@
     {
         private readonly ICommentService _service;
         private readonly ICaptchaService _captchaService;
-
-        public CommentsController(ICommentService service, ICaptchaService captchaService)
+        private readonly ICommentSearchService _searchService;
+        public CommentsController(ICommentService service, ICaptchaService captchaService, ICommentSearchService searchService)
         {
             _service = service;
             _captchaService = captchaService;
+            _searchService = searchService;
         }
 
         [HttpPost]
@@ -45,11 +48,16 @@
         }
 
         [HttpGet("seed")]
-        public async Task<IActionResult> Seed(
-        [FromServices] ISeedService seedService)
+        public async Task<IActionResult> Seed([FromServices] ISeedService seedService)
         {
             var result = await seedService.SeedComments();
             return Ok(result);
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> Search([FromQuery] GetElasticSearchQuery query)
+        {
+            return Ok(await _searchService.Search(query.Compare));
         }
     }
 }

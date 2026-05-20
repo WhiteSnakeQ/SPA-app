@@ -5,12 +5,12 @@ using System.Text.Json;
 
 namespace SPA_app.RabbitMQ.Publisher
 {
-    public class RabbitMqPublisher : IMessagePublisher, IDisposable
+    public class MessagePublisher : IMessagePublisher, IDisposable
     {
         private readonly IConnection _connection;
         private readonly IModel _channel;
 
-        public RabbitMqPublisher()
+        public MessagePublisher()
         {
             var factory = new ConnectionFactory()
             {
@@ -19,11 +19,9 @@ namespace SPA_app.RabbitMQ.Publisher
 
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
-
-            _channel.QueueDeclare(queue: QueueNames.ImageResize, durable: true, exclusive: false, autoDelete: false);
         }
 
-        public void Publish<T>(T message)
+        public void Publish<T>(T message, string queueName)
         {
             var json = JsonSerializer.Serialize(message);
             var body = Encoding.UTF8.GetBytes(json);
@@ -31,7 +29,7 @@ namespace SPA_app.RabbitMQ.Publisher
             var properties = _channel.CreateBasicProperties();
             properties.Persistent = true;
 
-            _channel.BasicPublish(exchange: "", routingKey: QueueNames.ImageResize, basicProperties: properties, body: body);
+            _channel.BasicPublish(exchange: "", routingKey: queueName, basicProperties: properties, body: body);
         }
         public void Dispose()
         {

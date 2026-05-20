@@ -6,11 +6,11 @@ using SPA_app.Services.CacheS;
 
 namespace SPA_app.Events.CommentCreated
 {
-    public sealed class CommentCreatedCacheClean : IEventHandler<CommentCreatedEvent>
+    public sealed class CommentCreatedCacheCleanHandler : IEventHandler<CommentCreatedEvent>
     {
         private readonly ICacheService _cacheService;
 
-        public CommentCreatedCacheClean(ICacheService cacheService)
+        public CommentCreatedCacheCleanHandler(ICacheService cacheService)
         {
             _cacheService = cacheService;
         }

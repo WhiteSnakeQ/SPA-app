@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SPA_app.Hubs;
+using SPA_app.Services.ElasticIndexIntialazer;
 using SPA_приложение.Data;
 using SPA_приложение.Extensions;
 using SPA_приложение.Middleware;
@@ -8,7 +9,7 @@ namespace SPA_приложение
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -20,8 +21,6 @@ namespace SPA_приложение
             builder.Services.AddCorsPolicies();
 
             builder.Services.AddApplicationServices();
-
-            builder.Services.AddMemoryCache();
 
             builder.Services.AddSignalR();
 
@@ -37,8 +36,13 @@ namespace SPA_приложение
 			{
 				var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-				db.Database.Migrate();
-			}
+				await db.Database.MigrateAsync();
+
+                var initializer = scope.ServiceProvider.GetRequiredService<ElasticIndexInitializer>();
+
+                await initializer.Initialize();
+
+            }
 
             if (app.Environment.IsDevelopment())
             {
@@ -71,7 +75,7 @@ namespace SPA_приложение
 
             app.MapFallbackToFile("index.html");
 
-            app.Run();
+            await app.RunAsync();
         }
     }
 }

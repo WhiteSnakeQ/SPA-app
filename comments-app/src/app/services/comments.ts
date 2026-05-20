@@ -5,6 +5,7 @@ import { CommentsResponseModel } from '../models/comments-response';
 import { CreateCommentModel } from '../models/create-comment';
 import { CommentModel } from '../models/comment';
 import { GET_COMMENTS, GET_REPLY } from '../graphql/commentQl';
+import { CommentSearchModel } from '../models/commentSearch';
 
 @Injectable({
     providedIn: 'root'
@@ -13,10 +14,24 @@ import { GET_COMMENTS, GET_REPLY } from '../graphql/commentQl';
 export class CommentsService
 {
     private apiUrl = '/api/comments';
+	private apiUrlSearch = '/api/comments/search'
 	private apiUrlGQL = "/graphql"
 
     constructor(private http: HttpClient)
     {
+    }
+
+	getElasticSearch(compare: string) : Observable<any>
+    {
+		const params = new HttpParams().set('compare', compare);
+
+        return this.http.get<CommentSearchModel>
+        (
+            this.apiUrlSearch,
+            {
+                params
+            }
+        );
     }
 
 	getCommentsGraphQL(page: number, sort: string, desc: boolean) : Observable<any>

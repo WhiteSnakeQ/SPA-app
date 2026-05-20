@@ -6,6 +6,7 @@ import { SignalrService } from '../services/signalr';
 import { CommentItemComponent } from './comment-item/comment-item';
 import { CommentFormComponent } from './comments-form/comments-form'
 import { CommentSorting } from '../enums/sorting';
+import { CommentSearchModel } from '../models/commentSearch';
 
 @Component({
     selector: 'app-comments',
@@ -24,6 +25,8 @@ export class CommentsComponent
     implements OnInit
 	{
 		comments: CommentModel[] = [];
+		searchResults: CommentSearchModel[] = [];
+
 		hasNextPage: boolean = false;
 
 		page: number = 0;
@@ -34,6 +37,8 @@ export class CommentsComponent
 		showForm: boolean = false;
 
 		isSelectFile: boolean = false;
+
+		private searchTimeout?: any;
 
 		constructor (private commentsService: CommentsService, private cdr: ChangeDetectorRef, private signalr: SignalrService)
 		{
@@ -67,6 +72,37 @@ export class CommentsComponent
 			}
 		}
 		
+		onSearch(event: Event): void
+		{
+			const value = (event.target as HTMLInputElement).value;
+
+			clearTimeout(this.searchTimeout);
+
+			if (!value.trim())
+			{
+				this.searchResults = [];
+				return;
+			}
+
+			this.searchTimeout = setTimeout(() =>
+			{
+				this.commentsService
+				.getElasticSearch(value)
+				.subscribe({
+					next: responce =>
+					{
+						this.searchResults = responce;
+						this.cdr.detectChanges();
+					},
+
+					error: err =>
+					{
+						console.error(err);
+					}
+				});
+			}, 300);
+		}
+
 		loadComments(): void
 		{
 			this.commentsService

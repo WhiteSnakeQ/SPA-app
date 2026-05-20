@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using SixLabors.ImageSharp;
+using SPA_app.Constants;
 using SPA_app.Events.CommentCreated;
 using SPA_app.Events.Interface;
 using SPA_app.RabbitMQ.Messages;
@@ -27,7 +28,7 @@ namespace SPA_app.Events.FileUploaded
                 {
                     FullPath = @event.FilePath,
                     FileExt = @event.Ext
-                });
+                }, QueueNames.ImageResize);
             }
             return Task.CompletedTask;
         }

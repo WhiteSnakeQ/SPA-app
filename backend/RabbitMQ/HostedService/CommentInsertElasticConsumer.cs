@@ -1,19 +1,22 @@
-﻿using RabbitMQ.Client;
+﻿using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using SPA_app.Constants;
 using SPA_app.RabbitMQ.Messages;
-using SPA_app.Services.ImageS;
+using SPA_app.Services.ElasticSearch;
+using SPA_приложение.Data;
+using SPA_приложение.Models;
 using System.Text;
 using System.Text.Json;
 
 namespace SPA_app.RabbitMQ.HostedService
 {
-    public class ImageResizeConsumer : BackgroundService
+    public class CommentInsertElasticConsumer : BackgroundService
     {
         private readonly IServiceScopeFactory _scopeFactory;
         private IConnection? _connection;
         private IModel? _channel;
-        public ImageResizeConsumer(IServiceScopeFactory scopeFactory)
+        public CommentInsertElasticConsumer(IServiceScopeFactory scopeFactory)
         {
             _scopeFactory = scopeFactory;
         }
@@ -28,7 +31,7 @@ namespace SPA_app.RabbitMQ.HostedService
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
 
-            _channel.QueueDeclare(queue: QueueNames.ImageResize, durable: true, exclusive: false, autoDelete: false);
+            _channel.QueueDeclare(queue: QueueNames.IndexComment, durable: true, exclusive: false, autoDelete: false);
 
             var consumer = new EventingBasicConsumer(_channel);
 
@@ -38,11 +41,15 @@ namespace SPA_app.RabbitMQ.HostedService
                 {
                     var body = ea.Body.ToArray();
                     var json = Encoding.UTF8.GetString(body);
-                    var message = JsonSerializer.Deserialize<ImageResizeMessage>(json);
+                    var message = JsonSerializer.Deserialize<CommentIndexMessage>(json);
                     using var scope = _scopeFactory.CreateScope();
-                    var imageService = scope.ServiceProvider.GetRequiredService<IImageService>();
 
-                    await imageService.ResizeImage(message!.FullPath, message.FileExt);
+                    var searchService = scope.ServiceProvider.GetRequiredService<ICommentSearchService>();
+                    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+                    var comment = await db.Comments.FirstOrDefaultAsync(x => x.Id == message!.CommentId);
+                    if (comment != null)
+                        await searchService.IndexComment(comment);
 
                     _channel.BasicAck(ea.DeliveryTag, false);
                 }
@@ -53,9 +60,10 @@ namespace SPA_app.RabbitMQ.HostedService
                 }
             };
 
-            _channel.BasicConsume(queue: QueueNames.ImageResize, autoAck: false, consumer: consumer);
+            _channel.BasicConsume(queue: QueueNames.IndexComment, autoAck: false, consumer: consumer);
             return Task.CompletedTask;
         }
+
         public override Task StopAsync(CancellationToken cancellationToken)
         {
             _channel?.Close();
