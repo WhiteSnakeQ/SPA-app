@@ -2,6 +2,6 @@
 {
     public interface IMessagePublisher
     {
-        void Publish<T>(T message, string queueName);
+        void Publish<T>(T message, string exchangeName, string routingKey = "");
     }
 }

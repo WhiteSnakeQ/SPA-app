@@ -12,6 +12,7 @@ query GetComments($input: GetCommentsQueryInput!)
 			userName
 			email
 			createdAt
+			rootId
 
 			replyCount
 
@@ -37,6 +38,7 @@ query GetReplyComments($input: GetReplyCommentsQueryInput!)
 		userName
 		email
 		createdAt
+		rootId
 
 		replyCount
 

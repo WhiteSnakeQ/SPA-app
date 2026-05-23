@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.37301.10
+# Visual Studio Version 18
+VisualStudioVersion = 18.6.11819.183 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPA-app", "SPA-app.csproj", "{1B6004A5-2A33-4486-832C-2F2F7D094C6C}"
 EndProject
@@ -23,7 +23,10 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "comments-app", "..\comments
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "61313"
+		SlnRelativePath = "..\comments-app\"
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test_SPA-app", "..\..\Test_SPA-app\Test_SPA-app.csproj", "{B9E61017-F40C-465A-0A25-BB78ECF6B3DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +42,10 @@ Global
 		{B34DF4E0-3C47-26F3-1CA3-A79330E09A2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B34DF4E0-3C47-26F3-1CA3-A79330E09A2F}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{B34DF4E0-3C47-26F3-1CA3-A79330E09A2F}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{B9E61017-F40C-465A-0A25-BB78ECF6B3DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9E61017-F40C-465A-0A25-BB78ECF6B3DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9E61017-F40C-465A-0A25-BB78ECF6B3DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9E61017-F40C-465A-0A25-BB78ECF6B3DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

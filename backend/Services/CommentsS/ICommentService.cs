@@ -7,7 +7,7 @@ namespace SPA_app.Services.CommentsS
 {
     public interface ICommentService
     {
-        Task<CommentDTO> Create(CreateCommentDTO dto);
+        Task<int> Create(CreateCommentDTO dto);
         Task<CommentsPageDTO> GetCommentsCache(int page, CommentSorting sort, bool desc);
         Task<List<CommentDTO>> GetReplyCache(int comment_id);
     };

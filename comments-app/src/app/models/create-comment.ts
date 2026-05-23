@@ -1,3 +1,5 @@
+import { UUID } from "crypto";
+
 export interface CreateCommentModel
 {
     userName: string;
@@ -10,4 +12,6 @@ export interface CreateCommentModel
 	
     captchaId: string;
     captchaAnswer: string;
+    requestId: UUID;
+    rootId: UUID;
 }

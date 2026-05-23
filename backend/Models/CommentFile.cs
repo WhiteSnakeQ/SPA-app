@@ -7,7 +7,7 @@ namespace SPA_приложение.Models
         public int Id { get; set; }
 
         public int CommentId { get; set; }
-        public Comment Comment { get; set; } = null!;
+        public Comment? Comment { get; set; } = null!;
 
         public string FileUrl { get; set; }
         public string FileName { get; set; }
@@ -18,7 +18,7 @@ namespace SPA_приложение.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
-        public CommentFile(int commentId, string fileUrl, string fileName, long size, Comment comment, FileType type) 
+        public CommentFile(int commentId, string fileUrl, string fileName, long size, Comment? comment, FileType type) 
         { 
             CommentId = commentId;
             Comment = comment;

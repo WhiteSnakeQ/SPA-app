@@ -36,7 +36,7 @@ namespace SPA_app.Services.SeedS
 
             foreach (var comment in roots)
             {
-                comment.RootId = comment.Id;
+                comment.RootId = Guid.NewGuid();
             }
 
             await _db.SaveChangesAsync();

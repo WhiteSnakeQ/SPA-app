@@ -1,6 +1,9 @@
+import { UUID } from 'node:crypto';
+
 export interface FileModel
 {
     id: number;
+    commentId: number;
 
     fileUrl: string;
 
@@ -15,6 +18,8 @@ export interface CommentModel
 
 	parentId: number;
 
+    rootId: UUID;
+
     userName: string;
 
     email: string;
@@ -26,5 +31,6 @@ export interface CommentModel
     files?: FileModel[];
 
     children?: CommentModel[];
+
 	replyCount: number;
 }

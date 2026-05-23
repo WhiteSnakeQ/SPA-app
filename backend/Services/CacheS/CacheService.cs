@@ -41,5 +41,15 @@ namespace SPA_app.Services.CacheS
         {
             await _cache.RemoveAsync(cacheKey);
         }
+        public async Task RemoveManyAsync(IEnumerable<string> cacheKeys)
+        {
+            var keys = cacheKeys.ToList();
+            var batches = keys.Chunk(10);
+
+            foreach (var batch in batches)
+            {
+                await Task.WhenAll(batch.Select(key => _cache.RemoveAsync(key)));
+            }
+        }
     }
 }

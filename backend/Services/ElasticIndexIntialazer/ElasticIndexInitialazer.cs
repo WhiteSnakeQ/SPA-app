@@ -5,12 +5,12 @@ using SPA_приложение.Data;
 
 namespace SPA_app.Services.ElasticIndexIntialazer
 {
-    public class ElasticIndexInitializer
+    public class ElasticSearchInitializer
     {
         private readonly ElasticsearchClient _client;
         private readonly AppDbContext _db;
 
-        public ElasticIndexInitializer(ElasticsearchClient client, AppDbContext db)
+        public ElasticSearchInitializer(ElasticsearchClient client, AppDbContext db)
         {
             _client = client;
             _db = db;

@@ -28,7 +28,7 @@ namespace SPA_app.Events.FileUploaded
                 {
                     FullPath = @event.FilePath,
                     FileExt = @event.Ext
-                }, QueueNames.ImageResize);
+                }, Queue.Files.ExchangeName);
             }
             return Task.CompletedTask;
         }

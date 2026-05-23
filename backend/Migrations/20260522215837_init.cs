@@ -18,11 +18,12 @@ namespace SPA_app.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ParentId = table.Column<int>(type: "int", nullable: true),
+                    RequestId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Homepage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RootId = table.Column<int>(type: "int", nullable: true),
+                    RootId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -73,6 +74,13 @@ namespace SPA_app.Migrations
                 name: "IX_Comments_ParentId",
                 table: "Comments",
                 column: "ParentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_RequestId",
+                table: "Comments",
+                column: "RequestId",
+                unique: true,
+                filter: "[RequestId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_RootId",

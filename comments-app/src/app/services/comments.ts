@@ -95,6 +95,10 @@ export class CommentsService
 		formData.append('text',	data.text);
 		formData.append('captchaId', data.captchaId);
 		formData.append('captchaAnswer', data.captchaAnswer);
+		formData.append('requestId', data.requestId);
+
+		if (data.rootId && data.rootId.trim() !== '') 
+			formData.append('rootId', data.rootId);
 
 		if (data.parentId !== null)
 			formData.append('parentId',	data.parentId.toString());

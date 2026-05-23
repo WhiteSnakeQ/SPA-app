@@ -12,6 +12,7 @@ namespace SPA_приложение.DTOs
         public string Text { get; set; }
         public int ReplyCount { get; set; } = 0;
         public DateTime CreatedAt { get; set; }
+        public Guid RootId { get ; set; }
         public List<CommentFileDTO> Files { get; set; } = [];
 
         public List<CommentDTO> Children { get; set; } = [];
@@ -25,6 +26,7 @@ namespace SPA_приложение.DTOs
             Email = comment.Email;
             Text = comment.Text;
             CreatedAt = comment.CreatedAt;
+            RootId = comment.RootId;
 
             if (comment.Files != null)
             {
@@ -49,6 +51,7 @@ namespace SPA_приложение.DTOs
             Email = comment.Email;
             Text = comment.Text;
             CreatedAt = comment.CreatedAt;
+            RootId = comment.RootId;
 
             ReplyCount = replyCount;
 

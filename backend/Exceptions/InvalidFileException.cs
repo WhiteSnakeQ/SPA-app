@@ -8,6 +8,6 @@
         public InvalidFileException(string message) : base(message, "files")
         {
         }
-        public InvalidFileException() : base("Invalid captcha", "files") { }
+        public InvalidFileException() : base("Invalid file", "files") { }
     }
 }

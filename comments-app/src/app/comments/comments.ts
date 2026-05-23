@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CommentModel } from '../models/comment';
+import { CommentModel, FileModel } from '../models/comment';
 import { CommentsService } from '../services/comments';
 import { SignalrService } from '../services/signalr';
 import { CommentItemComponent } from './comment-item/comment-item';
@@ -48,7 +48,8 @@ export class CommentsComponent
 		{
 			await this.signalr.startConnection(
 				comment => this.onCommentCreatedSignal(comment),
-				reply => this.onReplyCreatedSignal(reply)
+				reply => this.onReplyCreatedSignal(reply),
+				file => this.onFileRecive(file)
 			);
 
 			document.addEventListener
@@ -184,6 +185,19 @@ export class CommentsComponent
 
 			parent.replyCount += 1; 
 			parent.children?.unshift(reply);
+			this.cdr.detectChanges();
+		}
+
+		onFileRecive(reply: FileModel): void
+		{
+			
+			const parent = this.findComment(reply.commentId, this.comments);
+    		if (!parent)
+        		return;
+			if (!parent.files) 
+				parent.files = [];
+			
+			parent.files.unshift(reply);
 			this.cdr.detectChanges();
 		}
 

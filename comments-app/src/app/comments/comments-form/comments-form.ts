@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Input, Output, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CommentsService } from '../../services/comments';
-import { CreateCommentModel } from '../../models/create-comment';
 import { CommentModel } from '../../models/comment';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { urlValidator } from '../../shared/validators/url.validator';
+import { v4 as uuidv4 } from 'uuid';
+import { UUID } from 'node:crypto';
 
 @Component({
     selector: 'app-comment-form',
@@ -21,6 +22,7 @@ import { urlValidator } from '../../shared/validators/url.validator';
 export class CommentFormComponent
 {
     @Input() parentId: number | null = null;
+	@Input() rootId: UUID | null = null;
     @Output() created = new EventEmitter<CommentModel>();
     @Output() closed = new EventEmitter<void>();
 	@Output() fileSelecting = new EventEmitter<boolean>();
@@ -28,6 +30,7 @@ export class CommentFormComponent
 	@ViewChild('textArea') textArea!: ElementRef<HTMLTextAreaElement>;
 
 	captchaImage: string = '';
+	requestId: string = uuidv4();
 	form: FormGroup;
 
 	files: File[] = [];
@@ -64,7 +67,9 @@ export class CommentFormComponent
 			userName: this.form.value.userName.trim(),
             parentId: this.parentId,
 			captchaId: this.captchaId,
-            files: this.files
+            files: this.files,
+			requestId: this.requestId,
+			rooid: this.rootId
         };
 		
         this.commentsService.createComment(data).subscribe(
@@ -72,7 +77,7 @@ export class CommentFormComponent
 			next: comment =>
 			{
 				this.form.reset();
-
+				this.requestId = uuidv4();
                 this.files = [];
 
 				this.created.emit(comment);

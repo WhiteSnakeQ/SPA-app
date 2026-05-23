@@ -14,6 +14,7 @@ namespace SPA_app.Services.CaptchaS
     public class CaptchaService : ICaptchaService
     {
         private readonly ICacheService _cacheService;
+        private static readonly Random _random = new();
         public CaptchaService(ICacheService cache)
         {
             _cacheService = cache;
@@ -40,7 +41,7 @@ namespace SPA_app.Services.CaptchaS
             if (expected is null)
                 throw new InvalidCaptchaException("Captcha expired");
 
-            await _cacheService.RemoveAsync(id);
+            await _cacheService.RemoveAsync(cacheKey);
 
             if (!string.Equals(expected, answer, StringComparison.OrdinalIgnoreCase))
                 throw new InvalidCaptchaException("Invalid captcha");
@@ -64,8 +65,6 @@ namespace SPA_app.Services.CaptchaS
 
             using var image = new Image<Rgba32>(SizeX, SizeY);
 
-            var random = new Random();
-
             image.Mutate(ctx =>
             {
                 ctx.Fill(Color.White);
@@ -80,15 +79,15 @@ namespace SPA_app.Services.CaptchaS
                 {
                     ctx.DrawLine(
                         Color.Gray,
-                        random.Next(1, 3),
+                        _random.Next(1, 3),
 
                         new PointF(
-                            random.Next(0, CaptchaConstants.Lines.fPointX),
-                            random.Next(CaptchaConstants.Lines.PointYMin, CaptchaConstants.Lines.PointYMax)),
+                            _random.Next(0, CaptchaConstants.Lines.fPointX),
+                            _random.Next(CaptchaConstants.Lines.PointYMin, CaptchaConstants.Lines.PointYMax)),
 
                         new PointF(
-                            random.Next(CaptchaConstants.Lines.lPointX, SizeX),
-                            random.Next(CaptchaConstants.Lines.PointYMin, CaptchaConstants.Lines.PointYMax)));
+                            _random.Next(CaptchaConstants.Lines.lPointX, SizeX),
+                            _random.Next(CaptchaConstants.Lines.PointYMin, CaptchaConstants.Lines.PointYMax)));
                 }
 
                 for (int i = 0; i < text.Length; i++)
@@ -99,11 +98,11 @@ namespace SPA_app.Services.CaptchaS
 
                     int MinY = CaptchaConstants.Letters.MinY;
                     int MaxY = CaptchaConstants.Letters.MaxY;
-                    int y = random.Next(MinY, MaxY);
+                    int y = _random.Next(MinY, MaxY);
 
                     int angleMin = CaptchaConstants.Letters.angleMin;
                     int angleMax = CaptchaConstants.Letters.angleMax;
-                    int angle = random.Next(angleMin, angleMax);
+                    int angle = _random.Next(angleMin, angleMax);
 
                     var character = text[i].ToString();
 
@@ -114,8 +113,8 @@ namespace SPA_app.Services.CaptchaS
                 for (int i = 0; i < CaptchaConstants.GrayPoint; i++)
                 {
                     image[
-                        random.Next(image.Width),
-                        random.Next(image.Height)
+                        _random.Next(image.Width),
+                        _random.Next(image.Height)
                     ] = Color.LightGray;
                 }
             });

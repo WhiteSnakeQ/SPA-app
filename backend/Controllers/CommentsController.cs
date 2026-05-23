@@ -24,7 +24,7 @@
         }
 
         [HttpPost]
-        public async Task<ActionResult<CommentDTO>> Create([FromForm] CreateCommentDTO dto)
+        public async Task<ActionResult<int>> Create([FromForm] CreateCommentDTO dto)
         {
             var comment = await _service.Create(dto);
             return Ok( comment );

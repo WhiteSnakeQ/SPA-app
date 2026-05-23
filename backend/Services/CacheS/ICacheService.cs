@@ -7,5 +7,6 @@
         Task SetAsync<T>(string key, T value, TimeSpan? expiration = null);
 
         Task RemoveAsync(string key);
+        Task RemoveManyAsync(IEnumerable<string> cacheKeys);
     }
 }

@@ -12,7 +12,7 @@ using SPA_приложение.Data;
 namespace SPA_app.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260517163754_init")]
+    [Migration("20260522215837_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -46,8 +46,11 @@ namespace SPA_app.Migrations
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("RootId")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("RequestId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RootId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -64,6 +67,10 @@ namespace SPA_app.Migrations
                     b.HasIndex("Email");
 
                     b.HasIndex("ParentId");
+
+                    b.HasIndex("RequestId")
+                        .IsUnique()
+                        .HasFilter("[RequestId] IS NOT NULL");
 
                     b.HasIndex("RootId");
 

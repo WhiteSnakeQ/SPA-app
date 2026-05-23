@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CommentModel } from '../models/comment';
+import { CommentModel, FileModel } from '../models/comment';
 import * as signalR from '@microsoft/signalr';
 
 @Injectable({ providedIn: 'root' })
@@ -7,7 +7,7 @@ export class SignalrService
 {
 	private hubConnection!: signalR.HubConnection;
 
-	async startConnection(onComment: (comment: CommentModel) => void, onReply: (comment: CommentModel) => void): Promise<void>
+	async startConnection(onComment: (comment: CommentModel) => void, onReply: (comment: CommentModel) => void, onFileReady: (comment: FileModel) => void): Promise<void>
 	{
 		if (this.hubConnection?.state === signalR.HubConnectionState.Connected)
             return;
@@ -20,6 +20,8 @@ export class SignalrService
 		this.hubConnection.on('CommentCreated', onComment);
 
         this.hubConnection.on('ReplyCreated', onReply);
+
+        this.hubConnection.on('FileReady', onFileReady)
 
 		this.hubConnection.onreconnecting(error =>
         {

@@ -5,44 +5,31 @@
 
     public static class HtmlSanitizerHelper
     {
+        private static readonly HtmlSanitizer _sanitizer;
+        static HtmlSanitizerHelper()
+        {
+            _sanitizer = new HtmlSanitizer();
+            _sanitizer.AllowedTags.Clear();
+            _sanitizer.AllowedTags.Add("a");
+            _sanitizer.AllowedTags.Add("code");
+            _sanitizer.AllowedTags.Add("i");
+            _sanitizer.AllowedTags.Add("strong");
+
+            _sanitizer.AllowedAttributes.Clear();
+            _sanitizer.AllowedAttributes.Add("href");
+            _sanitizer.AllowedAttributes.Add("title");
+        }
+
         public static string Sanitize(string html)
         {
-            var sanitizer = new HtmlSanitizer();
-
-            sanitizer.AllowedTags.Clear();
-
-            sanitizer.AllowedTags.Add("a");
-            sanitizer.AllowedTags.Add("code");
-            sanitizer.AllowedTags.Add("i");
-            sanitizer.AllowedTags.Add("strong");
-
-            sanitizer.AllowedAttributes.Clear();
-
-            sanitizer.AllowedAttributes.Add("href");
-            sanitizer.AllowedAttributes.Add("title");
-
-            return sanitizer.Sanitize(html);
+            return _sanitizer.Sanitize(html);
         }
+
         public static bool IsValid(string html)
         {
             try
             {
-                var sanitizer = new HtmlSanitizer();
-
-                sanitizer.AllowedTags.Clear();
-
-                sanitizer.AllowedTags.Add("a");
-                sanitizer.AllowedTags.Add("code");
-                sanitizer.AllowedTags.Add("i");
-                sanitizer.AllowedTags.Add("strong");
-
-                sanitizer.AllowedAttributes.Clear();
-
-                sanitizer.AllowedAttributes.Add("href");
-                sanitizer.AllowedAttributes.Add("title");
-
-                var sanitized = sanitizer.Sanitize(html);
-
+                var sanitized = _sanitizer.Sanitize(html);
                 return sanitized == html;
             }
             catch
